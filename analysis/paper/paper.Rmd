@@ -96,7 +96,7 @@ pal_nm <- "Redon"
 
 fig_widths <- c(min = 1.18, single = 3.543, mid = 5.51, two = 7.48)
 
-runScenarios =F 
+runScenarios =T 
 ```
 TO DO: build large table of all parameters as the various sections are written. Adjust UI for consistent terminology along the way.
 

@@ -1,5 +1,8 @@
 .Rproj.user
+.Rproj
 analysis/data
+analysis/paper/paper_cache
+analysis/paper/.trackdown
 .Rhistory
 .Rdata
 .httr-oauth
