@@ -25,7 +25,7 @@ output:
       - --lua-filter=../templates/scholarly-metadata.lua
       - --lua-filter=../templates/author-info-blocks.lua
       - --lua-filter=../templates/pagebreak.lua
-bibliography: caribouDemography.bib
+bibliography: CaribouDemographicModel.bib
 csl: "../templates/journal-of-forest-ecology-and-management.csl" # Insert path for the bib-style
 abstract: |
   Text of abstract
@@ -63,6 +63,10 @@ knitr::opts_chunk$set(
 <!-- The actual document text starts here: -->
 
 # Introduction
+
+Motivating example - forecasting impacts of disturbance - WBI and RoF example. In order to reduce uncertainty, need to integrate local information on current state of the population into forecasts.
+
+In Mississa (and other places) available local data is old and limited. Not clear how indicative older data is of state of population. Need new data to resolve questions, but what type, how much is enough. Can't monitor in great detail everywhere all the time. More generally, need for tools to help assess the value of additional monitoring, given the info that is already available. 
 
 Topics of interest, questions, goals:
 
@@ -102,7 +106,22 @@ TO DO: build large table of all parameters as the various sections are written. 
 
 ## A simple Bayesian IPM to integrate local demographic data and national disturbance-demographic relationships
 
-TO DO: follow [@eacker_web-based_2019] description, noting changes.
+Following [@eacker_web-based_2019], the observed number of calves $c_t$ is a binomially distributed function of the observed number of adult female caribou $a_t$ and the estimated recruitment probability $R_t$: $$c_t \sim R_t^{c_t}(1-R_t)^{a_t-c_t}.$$
+We model recruitment probability as a function of anthropogenic disturbance and fire [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022], with a log link and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a anthro_t+\beta^R_f fireExclAnthro_t+\epsilon^R_t; \epsilon^R_t \sim \text{normal}(0,\sigma^2_{R,e}).$$ 
+Estimated recruitment probability is adjusted for sex ratio and delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012] to get expected recruits per female: $$\tilde{R}_t=\frac{R_t/2}{1+R_t/2}.$$
+
+Also following [@eacker_web-based_2019], Kaplan-Meier estimates of observed adult female survival probability $\hat{S}_t$ and associated precisions $\tau_t$ are estimated from known-fate radio collar data using the survival R package [@terry_m_therneau_modeling_2000], with precisions for years with no observed mortality estimated using a separate Bayesian model. Observed survival is a Gaussian distributed function of the true survival probability: $$\hat{S_t} \sim \text{normal}(S_t,1/\tau_t).$$ 
+We model true survival probability as an adjusted function of anthropogenic disturbance  [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022], with a log link and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 S_{adj,t}-0.5)/45,1); \log(S_{adj,t})=\beta^S_0+\beta^S_a anthro_t+\epsilon^S_t; \epsilon^S_t \sim \text{normal}(0,\sigma^2_{S,e}).$$ 
+To assess sensitivity of results to the survival estimation method, we also implemented an alternative parametric exponential survival model, wherein the state of an individual animal in year $t$ and month $m$ is Bernoulli distributed (ref IPM book): $$A_{t,m} \sim \text{Bernoulli}(S^{1/12}_tA_{t,m-1}).$$
+
+All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table X). We calibrated the prior distributions so that the 95% prediction interval from the IPM matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment  
+
+
+TO DO: ensure that INF_saf_INF_r_JAGS_extentTime.txt and INF_saf_INF_r_JAGS_expSurvival2.txt are identical except for the survival observation model. Or better yet, write code to sub in correct survival model more elegantly.
+TO DO: note various bits of truncation in the JAGS code to ensure R and S remain between 0 and 1 (not guaranteed give log link). Not all documented in this explanation. Bayesian wizard might know a better way. Or at least know how to explain.
+TO DO: note Eacker survival method gives biased results in years when <12 months of survival data is available.
+TO DO: Note I am dropping survival information for animals that are not alive at the beginning of a year to deal with censoring issues. There is probably some more elegant way to deal with this, but it won't make any difference as long as the collar deployment month is set to 1.
+TO DO: add references to documentation of popGrowthJohnson and other caribouMetrics functions.
 
 Note alternative exponential survival analysis method - put results in appendix, show it doesn't make much difference.
 
