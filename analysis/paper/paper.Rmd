@@ -107,15 +107,21 @@ TO DO: build large table of all parameters as the various sections are written. 
 ## A simple Bayesian IPM to integrate local demographic data and national disturbance-demographic relationships
 
 Following [@eacker_web-based_2019], the observed number of calves $c_t$ is a binomially distributed function of the observed number of adult female caribou $a_t$ and the estimated recruitment probability $R_t$: $$c_t \sim R_t^{c_t}(1-R_t)^{a_t-c_t}.$$
-We model recruitment probability as a function of anthropogenic disturbance and fire [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022], with a log link and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a anthro_t+\beta^R_f fireExclAnthro_t+\epsilon^R_t; \epsilon^R_t \sim \text{normal}(0,\sigma^2_{R,e}).$$ 
+We model recruitment probability as a function of anthropogenic disturbance and fire [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022], with a log link and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a anthro_t+\beta^R_f fireExclAnthro_t+\epsilon^R_t; \epsilon^R_t \sim \text{normal}(0,\sigma^2_{R}).$$ 
 Estimated recruitment probability is adjusted for sex ratio and delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012] to get expected recruits per female: $$\tilde{R}_t=\frac{R_t/2}{1+R_t/2}.$$
 
 Also following [@eacker_web-based_2019], Kaplan-Meier estimates of observed adult female survival probability $\hat{S}_t$ and associated precisions $\tau_t$ are estimated from known-fate radio collar data using the survival R package [@therneau_modeling_2000], with precisions for years with no observed mortality estimated using a separate Bayesian model. Observed estimated survival is a Gaussian distributed function of the true survival probability: $$\hat{S_t} \sim \text{normal}(S_t,1/\tau_t).$$ 
-We model true survival probability as an adjusted function of anthropogenic disturbance  [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022], with a log link and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a anthro_t+\epsilon^S_t; \epsilon^S_t \sim \text{normal}(0,\sigma^2_{S,e}).$$ 
+We model true survival probability as an adjusted function of anthropogenic disturbance  [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022], with a log link and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a anthro_t+\epsilon^S_t; \epsilon^S_t \sim \text{normal}(0,\sigma^2_{S}).$$ 
 To assess sensitivity of results to the survival estimation method, we also implemented an alternative parametric exponential survival model, wherein the state of an individual animal in year $t$ and month $m$ is Bernoulli distributed (ref IPM book): $$A_{t,m} \sim \text{Bernoulli}(S^{1/12}_t A_{t,m-1}).$$
 
-All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table X). We calibrated the prior distributions so that the 95% prediction interval from the IPM matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment  
+All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table \@ref(tab:priors)). We calibrated the prior distributions so that the 95% prediction interval from the IPM matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment (Supplement X).  
 
+```{r priors, echo=FALSE}
+
+source(here::here("analysis/scripts/formatPriors.R"))
+
+knitr::kable(tbl,caption="Model priors parameters are Gaussian distributed with expected values ")
+```
 
 TO DO: 
 
