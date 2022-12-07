@@ -131,14 +131,6 @@ TO DO:
 * Note I am dropping survival information for animals that are not alive at the beginning of a year to deal with censoring issues. There is probably some more elegant way to deal with this, but it won't make any difference as long as the collar deployment month is set to 1.
 * add references to documentation of popGrowthJohnson and other caribouMetrics functions.
 
-Note alternative exponential survival analysis method - put results in appendix, show it doesn't make much difference.
-
-## Calibrating to results from national model 
-
-Explain method for selecting values for remaining priors
-
-Write for now assuming that caribouMetrics paper will be published somewhere.
-
 ## A method for simulating example data
 
 ### True population dynamics
