@@ -1,5 +1,5 @@
 ---
-title: "Caribou Demographi Projection - interesting & informative title TBD"
+title: "Caribou Demographic Projection - interesting & informative title TBD"
 author:
   - name: Josie Hughes
     email: josie.hughes@ec.gc.ca
@@ -66,12 +66,15 @@ knitr::opts_chunk$set(
 
 Motivating example - forecasting impacts of disturbance - WBI and RoF example. In order to reduce uncertainty, need to integrate local information on current state of the population into forecasts.
 
-In Mississa (and other places) available local data is old and limited. Not clear how indicative older data is of state of population. Need new data to resolve questions, but what type, how much is enough. Can't monitor in great detail everywhere all the time. More generally, need for tools to help assess the value of additional monitoring, given the info that is already available. 
+Lots of variability among caribou ranges in monitoring data: recency, duration, types of data. E.g. 27+ consecutive years of both telemetry-survival and calf/cow-ratios in most Alberta ranges, vs. 1-4 years of data in most Ontario ranges (and that's old) *note we may want to be careful about inter-province comparisons for political reasons, but the variation is super relevant when to-date we've had the same 'rules' apply across the board... 
+
+In Missisa (and other places) available local data is old and limited. Not clear how indicative older data is of state of population. Need new data to resolve questions, but what type, how much is enough. Can't monitor in great detail everywhere all the time. More generally, need for tools to help assess the value of additional monitoring, given the info that is already available. 
 
 Topics of interest, questions, goals:
 
 * How get a demographic forecast informed by local demographic data and national disturbance-demographic relationships?
 * How to assess the value of collecting additional demographic data? 
+* maybe also something like "How much of a bias/misinterpretation can be (has been?) incurred if we don't recognize local differences"?
 * How does that value depend on current status of the range, available existing demographic data, and projected future disturbance. When and why is more information required, and when do we know enough?
 * Provide decision support tools to enable others to get forecasts informed by their local data and national models, and assess the value of monitoring scenarios. 
 
@@ -103,6 +106,10 @@ fig_widths <- c(min = 1.18, single = 3.543, mid = 5.51, two = 7.48)
 runScenarios =T 
 ```
 TO DO: build large table of all parameters as the various sections are written. Adjust UI for consistent terminology along the way.
+
+## Caribou population monitoring: survival and recruitment metrics
+
+Add in some brief description of the traditional approaches to estimating caribou survival (telemetry) and recruitment (aerial surveys/calf-cow ratios) - and show how these have been key for estimating population growth and status in most major boreal caribou projections/status documents. This could be useful background for defining terms below e.g. Rt, ct, at
 
 ## A simple Bayesian IPM to integrate local demographic data and national disturbance-demographic relationships
 
@@ -161,8 +168,10 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 TO DO: id examples from elsewhere to complement Ontario examples. Would be good to include an example where status is ok. What else, and why? WBI NWT ranges?
+*from Anna: i don't have access to actual estimates of R and S for different ranges, but some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, or Labrador pops have long term monitoring data but uncertain status...)
 
 NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
+*from Anna: the monitoring data summary I collated a few years ago doesn't include numbers of collars, just numbers of years of data of each type... I imagine some provinces would be more willing than others to share those details? (we tried for ages to get more details and eventually gave up)
 
 Table 2. Monitoring scenarios adapted from [@rettie_summary_2017].
 ```{r}
@@ -176,6 +185,7 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 TO DO: fill in set of monitoring scenarios when we have decided what they are.
+*from Anna: happy to chat about what these could be! (e.g. see suggestions above for examples of other ranges...)
 
 TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. 
 
