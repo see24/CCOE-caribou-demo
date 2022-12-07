@@ -176,8 +176,10 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 TO DO: id examples from elsewhere to complement Ontario examples. Would be good to include an example where status is ok. What else, and why? WBI NWT ranges?
+*from Anna: i don't have access to actual estimates of R and S for different ranges, but some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, or Labrador pops have long term monitoring data but uncertain status...)
 
 NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
+*from Anna: the monitoring data summary I collated a few years ago doesn't include numbers of collars, just numbers of years of data of each type... I imagine some provinces would be more willing than others to share those details? (we tried for ages to get more details and eventually gave up)
 
 Table 2. Monitoring scenarios adapted from [@rettie_summary_2017].
 ```{r}
