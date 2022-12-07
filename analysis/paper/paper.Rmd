@@ -193,6 +193,7 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 TO DO: fill in set of monitoring scenarios when we have decided what they are.
+*from Anna: happy to chat about what these could be! (e.g. see suggestions above for examples of other ranges...)
 
 TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. 
 
