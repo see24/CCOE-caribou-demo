@@ -1,5 +1,5 @@
 ---
-title: "Caribou Demographi Projection - interesting & informative title TBD"
+title: "Caribou Demographic Projection - interesting & informative title TBD"
 author:
   - name: Josie Hughes
     email: josie.hughes@ec.gc.ca
@@ -66,12 +66,15 @@ knitr::opts_chunk$set(
 
 Motivating example - forecasting impacts of disturbance - WBI and RoF example. In order to reduce uncertainty, need to integrate local information on current state of the population into forecasts.
 
-In Mississa (and other places) available local data is old and limited. Not clear how indicative older data is of state of population. Need new data to resolve questions, but what type, how much is enough. Can't monitor in great detail everywhere all the time. More generally, need for tools to help assess the value of additional monitoring, given the info that is already available. 
+Lots of variability among caribou ranges in monitoring data: recency, duration, types of data. E.g. 27+ consecutive years of both telemetry-survival and calf/cow-ratios in most Alberta ranges, vs. 1-4 years of data in most Ontario ranges (and that's old) *note we may want to be careful about inter-province comparisons for political reasons, but the variation is super relevant when to-date we've had the same 'rules' apply across the board... 
+
+In Missisa (and other places) available local data is old and limited. Not clear how indicative older data is of state of population. Need new data to resolve questions, but what type, how much is enough. Can't monitor in great detail everywhere all the time. More generally, need for tools to help assess the value of additional monitoring, given the info that is already available. 
 
 Topics of interest, questions, goals:
 
 * How get a demographic forecast informed by local demographic data and national disturbance-demographic relationships?
 * How to assess the value of collecting additional demographic data? 
+* maybe also something like "How much of a bias/misinterpretation can be (has been?) incurred if we don't recognize local differences"?
 * How does that value depend on current status of the range, available existing demographic data, and projected future disturbance. When and why is more information required, and when do we know enough?
 * Provide decision support tools to enable others to get forecasts informed by their local data and national models, and assess the value of monitoring scenarios. 
 
@@ -103,6 +106,10 @@ fig_widths <- c(min = 1.18, single = 3.543, mid = 5.51, two = 7.48)
 runScenarios =T 
 ```
 TO DO: build large table of all parameters as the various sections are written. Adjust UI for consistent terminology along the way.
+
+## Caribou population monitoring: survival and recruitment metrics
+
+Add in some brief description of the traditional approaches to estimating caribou survival (telemetry) and recruitment (aerial surveys/calf-cow ratios) - and show how these have been key for estimating population growth and status in most major boreal caribou projections/status documents. This could be useful background for defining terms below e.g. Rt, ct, at
 
 ## A simple Bayesian IPM to integrate local demographic data and national disturbance-demographic relationships
 
