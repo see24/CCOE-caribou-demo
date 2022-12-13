@@ -6,7 +6,7 @@
 # functions for caribou demographics paper
 
 # run scenario - temporary wrapper
-runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier"){
+runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier",popGrowthTable=NULL){
   retdir <-getwd()
   wdir <- app_path
 
@@ -39,12 +39,11 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
 
   ##########
   #Get full set of sims for comparison
+
   if(is.null(quants)){
-    simBig<-getSimsNational(wdir=wdir)#If called with default parameters, use saved object to speed things up.
-
+    simBig<-getSimsNational(wdir=wdir,popGrowthTable = NULL)#If called with default parameters, use saved object to speed things up.
   }else{
-    simBig<-getSimsNational(quants=quants,Anthro=Anthro)#If called with default parameters, use saved object to speed things up.
-
+    simBig<-getSimsNational(quants=quants,Anthro=Anthro,popGrowthTable=NULL)#If called with default parameters, use saved object to speed things up.
   }
 
   setwd(wdir)

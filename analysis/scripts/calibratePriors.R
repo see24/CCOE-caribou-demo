@@ -1,5 +1,5 @@
 #app_path <- "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
-
+#devtools::load_all(here::here())
 
 #vary lse, sse, and ssv in factorial array. Outcome of interest is KS distance
 lse=seq(1,10,by=2);sse=0.08696*seq(0.2,1,by=0.2);ssv=seq(0.01,0.09,by=0.02)
@@ -18,21 +18,23 @@ makeInterceptPlots(scResults,addBit=addBit,facetVars=c("lse","sse"),loopVars="ss
 #Case 1 - low survival/recruitment quantile
 #Case 2 - high survival/recruitment quantile
 
-numObsYrs=c(15);startsByYr = 300;J=1;cw=200;sQ=0.025;rQ=0.025
+numObsYrs=c(15);startsByYr = 45;J=1;cw=200;sQ=0.025;rQ=0.025
 scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,lse=lse,sse=sse,ssv=ssv)
 scResultsLow = runScenario(scns,quants=c(0.025,0.025),Anthro=0,survAnalysisMethod = "KaplanMeier")
 addBit = paste0("sQStarts",startsByYr,"low")
 KSLow = subset(scResultsLow$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
-makeInterceptPlots(scResultsLow,addBit=addBit,facetVars=c("lse","sse"),loopVars="ssv",whichPlots=c("Adult female survival"))
+makeInterceptPlots(scResultsLow,addBit=addBit,facetVars=c("lse","sse"),loopVars="ssv",
+                   whichPlots=c("Adult female survival"),useNational=F)
 
-numObsYrs=c(15);startsByYr = 300;J=1;cw=200;sQ=0.975;rQ=0.975
+numObsYrs=c(15);startsByYr = 45;J=1;cw=200;sQ=0.975;rQ=0.975
 scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,lse=lse,sse=sse,ssv=ssv)
 scResultsHigh = runScenario(scns,quants=c(0.975,0.975),Anthro=0,survAnalysisMethod = "KaplanMeier")
 addBit = paste0("sQStarts",startsByYr,"high")
 KSHigh = subset(scResultsHigh$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
 #source("CaribouDemoFns.R")
 
-makeInterceptPlots(scResultsHigh,addBit=addBit,facetVars=c("ssv","sse"),loopVars="lse",whichPlots=c("Adult female survival"),survLow=0.8)
+makeInterceptPlots(scResultsHigh,addBit=addBit,facetVars=c("ssv","sse"),loopVars="lse",
+                   whichPlots=c("Adult female survival"),survLow=0.8,useNational=F)
 
 KSAll$scn = "All"
 KSLow$scn = "Low"
@@ -51,6 +53,49 @@ write.csv(KS,here::here(paste0("tabs/SurvKSAll.csv")))
 #Interpretation
 #lse <5 is too constraining, does not allow intercept to adjust when presented with local evidence (from rows 2 and 3 of KS dist plot).
 #Low ssv and sse give best match to all distribution (row 1 of KS dist plot, SurvsQStarts1ssv0.01.pdf).
+
+###############
+#vary bse to get slope.
+bse=seq(1,10,by=2);sS=c(1);iA=90
+
+#Looking for low KS distance from full range of input sims when given almost no info
+numObsYrs=c(1);startsByYr = 1;J=1
+scns=expand.grid(P=numObsYrs,aSf=0,J=J,st=startsByYr,bse=bse,sS=sS,iA=iA)
+scResults = runScenario(scns,survAnalysisMethod = "Exponential")
+
+KSAll = subset(scResults$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
+addBit = paste0("sQStarts",startsByYr,"Anthro",iA)
+makeInterceptPlots(scResults,addBit=addBit,facetVars=c("bse"),whichPlots=c("Adult female survival"))
+
+sS=c(0,1,2)
+numObsYrs=c(15);startsByYr = 45;J=1;cw=200;sQ=0.025;rQ=0.025
+scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,bse=bse,sS=sS,iA=iA)
+scResultsLow = runScenario(scns,quants=c(0.025,0.025),Anthro=iA,survAnalysisMethod = "KaplanMeier")
+addBit = paste0("sQStarts",startsByYr,"Anthro",iA,"low")
+KSLow = subset(scResultsLow$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
+makeInterceptPlots(scResultsLow,addBit=addBit,facetVars=c("bse","sS"),whichPlots=c("Adult female survival"),
+                   useNational=F)
+
+#source("CaribouDemoFns.R")
+
+numObsYrs=c(15);startsByYr = 45;J=1;cw=200;sQ=0.975;rQ=0.975
+scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,bse=bse,sS=sS,iA=iA)
+scResultsHigh = runScenario(scns,quants=c(0.975,0.975),Anthro=iA,,survAnalysisMethod = "KaplanMeier")
+addBit = paste0("sQStarts",startsByYr,"Anthro",iA,"high")
+KSHigh = subset(scResultsHigh$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
+#source("CaribouDemoFns.R")
+
+makeInterceptPlots(scResultsHigh,addBit=addBit,facetVars=c("bse","sS"),whichPlots=c("Adult female survival"),
+                   survLow=0.8,useNational=F)
+
+KSAll$scn = "All"
+KSLow$scn = "Low"
+KSHigh$scn = "High"
+
+sCols = c("KSDistance","bse","sS","scn")
+KSAnthro90 = rbind(subset(KSAll,select=sCols),subset(KSLow,select=sCols),subset(KSHigh,select=sCols))
+write.csv(KSAnthro90,here::here(paste0("tabs/SurvKSAllAnthro90.csv")))
+
 
 
 if(0){
