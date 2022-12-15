@@ -101,7 +101,9 @@ devtools::load_all(here::here())
 #set paths
 data_path_raw <- "analysis/data/raw_data/"
 data_path_drvd <- "analysis/data/derived_data"
-app_path <- "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
+
+cd <- here::here()
+app_path <- gsub("Caribou-Demographic-Projection-Paper","BayesianCaribouDemographicProjection",cd,fixed=T)
 
 pal_nm <- "Redon"
 
