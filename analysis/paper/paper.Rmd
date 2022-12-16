@@ -175,7 +175,7 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 TO DO: id examples from elsewhere to complement Ontario examples. Would be good to include an example where status is ok. What else, and why? WBI NWT ranges?
-*from Anna: i don't have access to actual estimates of R and S for different ranges, but some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, or Labrador pops have long term monitoring data but uncertain status...)
+*from Anna: i don't have access to actual estimates of R and S for different ranges, but some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, northern QC for really broad-expanse pop, or Labrador pops have long term monitoring data but uncertain status...)
 
 NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
 *from Anna: the monitoring data summary I collated a few years ago doesn't include numbers of collars, just numbers of years of data of each type... I imagine some provinces would be more willing than others to share those details? (we tried for ages to get more details and eventually gave up)
@@ -192,7 +192,7 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 TO DO: fill in set of monitoring scenarios when we have decided what they are.
-*from Anna: happy to chat about what these could be! (e.g. see suggestions above for examples of other ranges...)
+*Anna thinking about this...
 
 TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. 
 
@@ -225,6 +225,13 @@ if(runScenarios){
 #knitr::include_graphics(here::here("figs/Figure1_Example.png"))
 
 ```
+
+# Discussion
+
+Will need a section on the fundamental assumptions of these models/aspatial nature of them, e.g. that collared cows  and cows observed in surveys are a random representative sample of the larger population, and that there is full mixing in the population so that estimated survival/recruitment rates apply equally to all animals in the population. We can discuss this with some contrasting examples, e.g. collaring 30 animals from a very small/restricted population (like Little Smoky, 308,606ha, pop size estimate 78 as of COSEWIC 2014) would likely be much more representative of the population vs. collaring 30 animals from a relatively large/expansive population (northern Quebec range Q6, 62,156,186 ha, pop size 9000 as of COSEWIC 2014). But because of the way this model is built, we assume that the sample is equally representative in either of those cases, so changing the initial starting N won't affect model performance/predictions much here... 
+
+We should likely also have a pgph about costs of monitoring - it'll be pretty short, cause basically we have no idea what it costs :) Through the NBCKC MOnitoring Working Group work, we tried over and over to get some basic cost estimates from P/T reps and practitioners, and hit a wall - nobody wanted to tell us a thing. Don't know if we'd now find anyone is more open to sharing, but don't think we should get our hopes up. But at the very least we'll want to acknowledge that we haven't accounted for relative costs of monitoring...
+
 
 
 
