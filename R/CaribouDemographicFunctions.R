@@ -7,6 +7,7 @@
 
 # run scenario - temporary wrapper
 runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier",popGrowthTable=NULL){
+
   retdir <-getwd()
   wdir <- app_path
 
@@ -14,6 +15,8 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   dir.create("tabs")
 
   source(paste0(wdir,"/CaribouDemoFns.R"))
+
+  scns<-fillDefaults(scns)
 
   # usage
   packages <- c("shiny", "R2jags","gdata","mcmcplots",
@@ -41,9 +44,9 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   #Get full set of sims for comparison
 
   if(is.null(quants)){
-    simBig<-getSimsNational(wdir=wdir,popGrowthTable = NULL)#If called with default parameters, use saved object to speed things up.
+    simBig<-getSimsNational(wdir=wdir,popGrowthTable = NULL,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
   }else{
-    simBig<-getSimsNational(quants=quants,Anthro=Anthro,popGrowthTable=NULL)#If called with default parameters, use saved object to speed things up.
+    simBig<-getSimsNational(quants=quants,Anthro=Anthro,popGrowthTable=NULL,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
   }
 
   setwd(wdir)
