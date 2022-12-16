@@ -279,7 +279,7 @@ knitr::include_graphics(here::here("figs/PriorKSDists.png"))
 #TO DO: figure out what to do about citations and references in figure captions. Or just fill them in manually at a later stage.
 ```
 
-```{r PriorAllFits, fig.cap="Differences between posterior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming minimal monitoring (1 years of 1 collar per year) of populations from the 50% quantile of the national model. In these examples, the standard deviation the random effect prior (ssv: $\\sigma^2_S$ in Table @ref(tab:priors)) is 0.03, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 500 sample populations from the national model.",  cache=TRUE}
+```{r PriorAllFits, fig.cap="Differences between posterior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming minimal monitoring (1 years of 1 collar per year) of populations from the 50% quantile of the national model. In these examples, the standard deviation the random effect prior (ssv: $\\sigma^2_S$ in Table @ref(tab:priors)) is 0.03, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
 knitr::include_graphics(here::here("figs/SurvsQStarts1ssv0.03.png"))
 ```
 
@@ -287,7 +287,7 @@ knitr::include_graphics(here::here("figs/SurvsQStarts1ssv0.03.png"))
 knitr::include_graphics(here::here("figs/SurvsQStarts45lowssv0.03.png"))
 ```
 
-```{r PriorAllFitsAnthro90, fig.cap="Differences between posterior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming minimal monitoring (1 years of 1 collar per year) of populations from the 50% quantile of the national model. In these examples, anthropogenic disturbance is 90%. When the multiplier on the prior standard deviation of the survival slope (bse: $\\beta^S_a$ in Table @ref(tab:priors)) is 3, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 500 sample populations from the national model.", cache=TRUE}
+```{r PriorAllFitsAnthro90, fig.cap="Differences between posterior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming minimal monitoring (1 years of 1 collar per year) of populations from the 50% quantile of the national model. In these examples, anthropogenic disturbance is 90%. When the multiplier on the prior standard deviation of the survival slope (bse: $\\beta^S_a$ in Table @ref(tab:priors)) is 3, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}
 knitr::include_graphics(here::here("figs/SurvsQStarts1Anthro90.png"))
 ```
 
@@ -301,7 +301,7 @@ knitr::include_graphics(here::here("figs/SurvsQStarts45Anthro90high.png"))
 knitr::include_graphics(here::here("figs/PriorKSDistsRec.png"))
 ```
 
-```{r PriorAllFitsRec, fig.cap="Differences between posterior predictive recruitment distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no monitoring. In these examples, the standard deviation the random effect prior (srv: $\\sigma^2_R$ in Table @ref(tab:priors)) is 0.22, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 500 sample populations from the national model.",  cache=TRUE}
+```{r PriorAllFitsRec, fig.cap="Differences between posterior predictive recruitment distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no monitoring. In these examples, the standard deviation the random effect prior (srv: $\\sigma^2_R$ in Table @ref(tab:priors)) is 0.22, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
 knitr::include_graphics(here::here("figs/RecrQStarts1srv0.22.png"))
 ```
 
@@ -309,7 +309,7 @@ knitr::include_graphics(here::here("figs/RecrQStarts1srv0.22.png"))
 knitr::include_graphics(here::here("figs/RecrQStarts45lowsrv0.22.png"))
 ```
 
-```{r PriorAllFitsAnthro90Rec, fig.cap="Differences between posterior recruitment predictive distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no monitoring. In these examples, anthropogenic disturbance is 90%. When the multiplier on the prior standard deviation of the slope of the relationship between recruitment and anthropogenic disturbance (bre: $\\beta^R_a$ in Table @ref(tab:priors)) is 4, the posterior recruitment distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 500 sample populations from the national model.", cache=TRUE}
+```{r PriorAllFitsAnthro90Rec, fig.cap="Differences between posterior recruitment predictive distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no monitoring. In these examples, anthropogenic disturbance is 90%. When the multiplier on the prior standard deviation of the slope of the relationship between recruitment and anthropogenic disturbance (bre: $\\beta^R_a$ in Table @ref(tab:priors)) is 4, the posterior recruitment distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}
 knitr::include_graphics(here::here("figs/RecrQStarts1Anthro90.png"))
 ```
 
