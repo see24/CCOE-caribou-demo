@@ -6,8 +6,8 @@
 # functions for caribou demographics paper
 
 # run scenario - temporary wrapper
-runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier",popGrowthTable=NULL){
-
+runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier",getKSDists=T){
+  #quants=NULL;Anthro=NULL;survAnalysisMethod="KaplanMeier";getKSDists=F
   retdir <-getwd()
   wdir <- app_path
 
@@ -31,26 +31,26 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   library(dplyr)
 
   eParsIn = list()
-  eParsIn$cowCounts <- data.frame(Year = 1981:2018,
+  eParsIn$cowCounts <- data.frame(Year = 1981:2023,
                                   Count = 100,
                                   Class = "cow")
-  eParsIn$freqStartsByYear <- data.frame(Year = 1981:2018,
+  eParsIn$freqStartsByYear <- data.frame(Year = 1981:2023,
                                          numStarts = 30)
   eParsIn$collarOnTime=1
   eParsIn$collarOffTime=12
-  eParsIn$collarNumYears=1
+  eParsIn$collarNumYears=3
 
   ##########
   #Get full set of sims for comparison
 
   if(is.null(quants)){
-    simBig<-getSimsNational(wdir=wdir,popGrowthTable = NULL,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
+    simBig<-getSimsNational(wdir=wdir,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
   }else{
-    simBig<-getSimsNational(quants=quants,Anthro=Anthro,popGrowthTable=NULL,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
+    simBig<-getSimsNational(quants=quants,Anthro=Anthro,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
   }
 
   setwd(wdir)
-  scResults = runScnSet(scns,eParsIn,simBig,survAnalysisMethod)
+  scResults = runScnSet(scns,eParsIn,simBig,survAnalysisMethod,getKSDists=getKSDists,printProgress=T)
   setwd(retdir)
   return(scResults)
 }
