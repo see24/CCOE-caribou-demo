@@ -10,7 +10,7 @@ scn_defaults <- c(eval(formals(fillDefaults)$defList),
 #sensitivity
 minimalScn = expand.grid(P=1,st=1,cmult=0,ri=1)
 
-monitoringScns = expand.grid(P=seq(1,20),st=c(30,45,60),cmult=c(2,3,4),ri=c(1,2,3,4,5))
+monitoringScns = expand.grid(P=seq(1,20),st=c(30,45,60),cmult=c(2,3,4),ri=c(1,2,3,4,5),assessmentYrs=c(1,3))
 stateScns = expand.grid(iA=c(0,20,40,60),rep=seq(1:500))
 
 monitoringScns = expand.grid(P=c(1,2,4,8,16),st=c(30,60),cmult=c(2,3,4),ri=c(1,2,4))
@@ -30,12 +30,8 @@ str(scns)
 #scns=scns[10,]
 #scResults = readRDS("temp.Rds")
 
-#Summary metric is proportion of wrong answers.
 #DO - add minimal monitoring.
-
-#DO - set up to calculate mean lambda over some number of years around target year
 #DO - deal with wierd prob viability values when pops are very small by (a) adding min pop size condition, and (b) calculate lambda over some number of years around target year
-#DO - adjust true F pop size outputs by one year
 #DO - set up wrapper functions to work with tables of disturbance and monitoring scenarios.
 #DO - figure out how to run on cloud.
 
@@ -63,7 +59,6 @@ probs$viableTrue = probs$trueMean>0.99
 probs$wrong = (probs$Mean<=0.99)&probs$viableTrue
 probs$correct_status[probs$wrong]="no"
 probs$correct_status[!probs$wrong]="yes"
-
 
 pageVars= c("st","smult","iA","ri")
 probs$pageLab = paste0("st",probs$st,"cmult",probs$cmult,"ri",probs$ri,"iA",probs$iA)
