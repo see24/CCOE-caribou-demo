@@ -13,6 +13,7 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
 
   dir.create("figs")
   dir.create("tabs")
+  dir.create("results")
 
   source(paste0(wdir,"/CaribouDemoFns.R"))
 
