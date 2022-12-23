@@ -1,11 +1,16 @@
+#!/usr/bin/env Rscript
+
 #Run scenario batches on cloud machine
+#assuming workingDir is where we are, cmd line invocation is
+#Rscript --vanilla ./analysis/scripts/sensitivityMinimal.R 3
 
-workingDir = "C:/Users/HughesJo/Documents/gitprojects/Caribou-Demographic-Projection-Paper"
-toolDir = "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
-libDir = .libPaths()[1]
-cpageId=2 #which batch?
+args = commandArgs(trailingOnly=TRUE)
+
+workingDir = "C:/Users/HughesJo/Documents/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper"
+toolDir = "C:/Users/HughesJo/Documents/cloudDeploymentSandbox/BayesianCaribouDemographicProjection"
+libDir = "C:/Users/HughesJo/Documents/cloudDeploymentSandbox/Rpackages"
+cpageId=args[1] #which batch?
 setName = "s1"
-
 
 #######################
 setwd(workingDir)
@@ -14,8 +19,8 @@ dir.create(paste0("tabs/",setName),recursive=T)
 dir.create(paste0("results/",setName),recursive=T)
 
 packages <- c("R2jags","gdata","mcmcplots",
-              "ggplot2","RODBC","plyr","survival","gdata","data.table",
-              "tidyr","dplyr","caribouMetrics")
+              "ggplot2","RODBC","plyr","dplyr","survival","gdata","data.table",
+              "tidyr","caribouMetrics")
 
 for(p in packages){library(p,lib.loc=libDir,character.only=T)}
 
