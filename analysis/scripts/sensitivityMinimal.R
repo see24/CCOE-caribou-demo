@@ -2,13 +2,14 @@
 
 #Run scenario batches on cloud machine
 #assuming workingDir is where we are, cmd line invocation is
-#Rscript --vanilla ./analysis/scripts/sensitivityMinimal.R 3
+#Rscript --vanilla ./cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R 1
 
 args = commandArgs(trailingOnly=TRUE)
 
-workingDir = "C:/Users/HughesJo/Documents/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper"
-toolDir = "C:/Users/HughesJo/Documents/cloudDeploymentSandbox/BayesianCaribouDemographicProjection"
-libDir = "C:/Users/HughesJo/Documents/cloudDeploymentSandbox/Rpackages"
+baseDir = getwd()
+workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper")
+toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
+libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
 cpageId=args[1] #which batch?
 setName = "s1"
 
