@@ -180,7 +180,7 @@ TO DO: id examples from elsewhere to complement Ontario examples. Would be good 
 NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
 *from Anna: the monitoring data summary I collated a few years ago doesn't include numbers of collars, just numbers of years of data of each type... I imagine some provinces would be more willing than others to share those details? (we tried for ages to get more details and eventually gave up)
 
-Table 2. Monitoring scenarios adapted from [@rettie_summary_2017]. *maybe we could remove the last couple columns if they're not things we're going to be varying...? (same for min collars if the same as init?)
+Table 2. Monitoring scenarios adapted from [@rettie_summary_2017]. *Anna will remove the last couple columns since we won't be varying those (same for min collars since it'll be the same as init collars)
 ```{r}
 tbl <- "Years|Initial collars|Min collars|cow multiplier|collaring month|collar duration
 3|25|25|3|1|3
