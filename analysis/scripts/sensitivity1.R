@@ -15,9 +15,9 @@ monitoringScns = expand.grid(P=c(1,2,4,8,16),st=c(30,60),cmult=c(2,3,4),ri=c(1,2
 stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
 stateScns = merge(stateScns,data.frame(rep=seq(1:100)))
 
-monitoringScns = expand.grid(P=c(1,4,16),st=c(60),cmult=c(3),ri=c(1),assessmentYrs=c(3))
-stateScns = data.frame(tA=c(0,20,40,60),aS=c(0,1,1,1),aSf=c(1,1,1,1))
-stateScns = merge(stateScns,data.frame(rep=seq(1:10)))
+#monitoringScns = expand.grid(P=c(1,4,16),st=c(60),cmult=c(3),ri=c(1),assessmentYrs=c(3))
+#stateScns = data.frame(tA=c(0,20,40,60),aS=c(0,1,1,1),aSf=c(1,1,1,1))
+#stateScns = merge(stateScns,data.frame(rep=seq(1:10)))
 
 #monitoringScns = expand.grid(P=c(1,4,8,16),st=c(30,60),cmult=c(3),ri=c(1,2,4),assessmentYrs=1)
 #stateScns = expand.grid(iA=c(0),rep=seq(1:30))
@@ -29,7 +29,7 @@ scns=merge(monitoringScns,stateScns)
 
 scns$iA = scns$tA-scns$P*scns$aS+1
 
-scns$N0 = 10000
+scns$N0 = 1000
 nrow(scns)
 #scns=scns[10,]
 #scResults = readRDS("temp.Rds")
