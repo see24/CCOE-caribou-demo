@@ -2,12 +2,15 @@
 
 #Run scenario batches on cloud machine
 #assuming workingDir is where we are, cmd line invocation is
-#Rscript --vanilla ./cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R 1
+#Rscript --vanilla ./cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R 1
 
 args = commandArgs(trailingOnly=TRUE)
-
+#args=1
 baseDir = getwd()
-workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper")
+print(baseDir)
+workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper")
+#baseDir = "C:/Users/HughesJo/Documents/"; workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper")
+
 toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
 libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
 cpageId=args[1] #which batch?
@@ -25,8 +28,9 @@ packages <- c("R2jags","gdata","mcmcplots",
 
 for(p in packages){library(p,lib.loc=libDir,character.only=T)}
 
-scns = subset(read.csv(paste0("tabs/",setName,".csv")),pageId==cpageId)
-nrow(scns)
+allScns = read.csv(paste0("tabs/",setName,".csv"))
+scns = subset(allScns,pageId==cpageId)
+nrow(allScns)
 
 ####################
 eParsIn = list()
