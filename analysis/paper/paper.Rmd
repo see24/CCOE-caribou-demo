@@ -168,6 +168,7 @@ TO DO: how to assess or quantify value in this context. Power to distinguish inc
 ## Scenarios
 
 Table 1. Example ranges. Ontario demographic information from [@mnrf_state_2014]. If two numbers given for Anthropogenic disturbance they are BEAD 2010 and 2015.
+*note that we've had some input on monitoring numbers from NL, BC, ON (and MB pending), so some of them may also be willing to give us case study examples to use here?
 
 ```{r}
 tbl <- "Range|Anthropogenic Disturbance|$\\lambda$|R|S|Survey Years
@@ -184,9 +185,10 @@ TO DO: id examples from elsewhere to complement Ontario examples. Would be good 
 *from Anna: i don't have access to actual estimates of R and S for different ranges, but some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, northern QC for really broad-expanse pop, or Labrador pops have long term monitoring data but uncertain status...)
 
 NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
-*from Anna: the monitoring data summary I collated a few years ago doesn't include numbers of collars, just numbers of years of data of each type... I imagine some provinces would be more willing than others to share those details? (we tried for ages to get more details and eventually gave up)
+*feedback from MonitoringWG contacts includes details on collar numbers for BC, ON, NL, (MB pending); e.g. in Ontario they aim for 20-30 collars in smaller pops, 35+ in bigger pops; Labrador aims to have between 5-25 collars monitored at any one time, depending on pop size; in BC, real numbers of collared animals have ranged been between 3-59 per pop/year, varying both across-yrs-within-pop and across-pop-within-yr [with COVID yrs by far the lowest].
 
-Table 2. Monitoring scenarios adapted from [@rettie_summary_2017]. *removed the second collar column (assuming minimum=initial) and removed collaring month and duration, but added renewal interval, and hoping to also be able to provide some sort of example of real ranges that are similar to the scenario. Anna waiting to hear back from Monitoring WG folks to get a sense of what values they've been using so that we can make these values realistic.
+Table 2. Monitoring scenarios adapted from [@rettie_summary_2017]. *removed the second collar column (assuming minimum=initial) and removed collaring month and duration, but added renewal interval, and hoping to also be able to provide some sort of example of real ranges that are similar to the scenario. 
+*Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
 ```{r}
 tbl <- "Years|Collars|cow multiplier|collar renewal interval|example
 3|30|3|1|ex range?
@@ -198,7 +200,7 @@ row.names(df)<-NULL
 knitr::kable(df)
 ```
 
-TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. 
+TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. *and can maybe ask MonitoringWG contacts who seemed keen whether they'd have case studies to offer too...?
 
 TO DO: Fire scenarios? 
 
@@ -234,7 +236,10 @@ if(runScenarios){
 
 Will need a section on the fundamental assumptions of these models/aspatial nature of them, e.g. that collared cows  and cows observed in surveys are a random representative sample of the larger population, and that there is full mixing in the population so that estimated survival/recruitment rates apply equally to all animals in the population. We can discuss this with some contrasting examples, e.g. collaring 30 animals from a very small/restricted population (like Little Smoky, 308,606ha, pop size estimate 78 as of COSEWIC 2014) would likely be much more representative of the population vs. collaring 30 animals from a relatively large/expansive population (northern Quebec range Q6, 62,156,186 ha, pop size 9000 as of COSEWIC 2014). But because of the way this model is built, we assume that the sample is equally representative in either of those cases, so changing the initial starting N won't affect model performance/predictions much here... 
 
+On a related topic to population size; Note that the stuff we got from ArtR regarding simulations for sample size does acknowledge that pops of different sizes have different monitoring requirements, and Sara's Labrador numbers also show targets relative to pop size... Since this kind of aspatial model will mostly be using small population sizes in order to see any effects, we'll jsut have to acknowledge that a caveat of this is that we're not fully able to explore all the population size effects with this model, but generally Josie has found little impact of initial population size to the results. 
+
 We should likely also have a pgph about costs of monitoring - it'll be pretty short, cause basically we have no idea what it costs since nobody will tell us :) Through the NBCKC Monitoring Working Group work, we tried over and over to get some basic cost estimates from P/T reps and practitioners, and hit a wall - nobody wanted to tell us a thing. Don't know if we'd now find anyone is more open to sharing, but don't think we should get our hopes up. But at the very least we'll want to acknowledge that we haven't accounted for relative costs of monitoring... [e.g. costs outlined in the Telemetry guidance report from the MonitoringWG: "Expenses to consider in radio-collared monitoring will vary, based on: helicopter (or other aircraft) use, purchase of tracking collars, data fees associated with the collars (the cost of which varies by operating system, recording frequency and data transmission frequency), and live-capture equipment (3 or more sets of capture nets and associated buckets, a netting gun, and ankle hobbles)"]
+-->perhaps the keen MonitoringWG contacts would be willing to provide even really rough cost estimates, and/or even jsut a relative sense of how different it would be to e.g. monitor a few pops for many yrs vs lots of pops for a short time...?
 
 
 
