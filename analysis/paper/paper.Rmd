@@ -13,7 +13,7 @@ author:
     email: cheryl-ann.johnson@ec.gc.ca
     institute: [ECCC]
     correspondence: false
-  - name: Anna Calvert
+  - name: Anna M Calvert
     email: anna.calvert@ec.gc.ca
     institute: [ECCC]
     correspondence: false
