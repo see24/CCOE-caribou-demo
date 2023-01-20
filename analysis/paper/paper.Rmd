@@ -150,6 +150,7 @@ TO DO:
 * note Eacker survival method gives biased results in years when <12 months of survival data is available.
 * Note I am dropping survival information for animals that are not alive at the beginning of a year to deal with censoring issues. There is probably some more elegant way to deal with this, but it won't make any difference as long as the collar deployment month is set to 1.
 * add references to documentation of popGrowthJohnson and other caribouMetrics functions.
+* consider & comment on alternative choices made in this example https://poissonconsulting.shinyapps.io/bboushiny/. Follow Eacker example in all particulars, change some aspects, or do comparisons?
 
 ## A method for simulating example data
 
@@ -160,7 +161,6 @@ Write for now assuming that caribouMetrics paper will be published somewhere.
 
 ### Observed recruitment from calf:cow aerial surveys
 
-
 ## Assessing the value of information
 
 TO DO: how to assess or quantify value in this context. Power to distinguish increasing from decreasing population? What else?
@@ -168,7 +168,7 @@ TO DO: how to assess or quantify value in this context. Power to distinguish inc
 ## Scenarios
 
 Table 1. Example ranges. Ontario demographic information from [@mnrf_state_2014]. If two numbers given for Anthropogenic disturbance they are BEAD 2010 and 2015.
-*note that we've had some input on monitoring numbers from NL, BC, ON (and MB pending), so some of them may also be willing to give us case study examples to use here?
+*note that we've had some input on monitoring numbers from NL, BC, ON (and MB pending), so some of them may also be willing to give us case study examples to use here? Note can get details about SK1 from Phil's report.
 
 ```{r}
 tbl <- "Range|Anthropogenic Disturbance|$\\lambda$|R|S|Survey Years
@@ -187,22 +187,30 @@ TO DO: id examples from elsewhere to complement Ontario examples. Would be good 
 NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
 *feedback from MonitoringWG contacts includes details on collar numbers for BC, ON, NL, (MB pending); e.g. in Ontario they aim for 20-30 collars in smaller pops, 35+ in bigger pops; Labrador aims to have between 5-25 collars monitored at any one time, depending on pop size; in BC, real numbers of collared animals have ranged been between 3-59 per pop/year, varying both across-yrs-within-pop and across-pop-within-yr [with COVID yrs by far the lowest].
 
-Table 2. Monitoring scenarios adapted from [@rettie_summary_2017]. *removed the second collar column (assuming minimum=initial) and removed collaring month and duration, but added renewal interval, and hoping to also be able to provide some sort of example of real ranges that are similar to the scenario. 
-*Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
-```{r}
-tbl <- "Years|Collars|cow multiplier|collar renewal interval|example
-3|30|3|1|ex range?
-"
-df <- read.delim(textConnection(tbl),header=FALSE,sep="|",strip.white=TRUE,stringsAsFactors=FALSE)
-names(df) <- unname(as.list(df[1,]))
-df <- df[-1,] # remove first row
-row.names(df)<-NULL
-knitr::kable(df)
+relevant refs: [@rettie_summary_2017];?
+
+```{r monitoringScenarios, echo=FALSE,message=FALSE}
+
+source(here::here("analysis/scripts/formatScenarios.R"))
+
+knitr::kable(tbl,caption="Monitoring scenarios parameters and values (example values to stimulate discussion - what should these numbers be and why?)")
 ```
+
+*Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
 
 TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. *and can maybe ask MonitoringWG contacts who seemed keen whether they'd have case studies to offer too...?
 
-TO DO: Fire scenarios? 
+TO DO: Fire scenarios? Add high fire scenario in appendix of one by one sensitivity checks.
+
+TO DO: run low initial population size scenario, put in appendix of one by one sensitivity checks. 
+
+TO DO: calculate change in anthro disturbance over 5 yrs across ranges to get realistic distribution of numbers of this & justify choice of parameters. run alternative scenario to put in one by one sensitivity appendix.
+
+```{r fig1, fig.cap="Anthropogenic disturbance and monitoring scenarios (examples to stimulate discussion).", cache=TRUE}
+knitr::include_graphics(here::here("figs/forPaper/distScnscmult3ay1aSf1.png"))
+
+```
+
 
 ## Decision support tool development
 
@@ -210,7 +218,7 @@ Integration into caribouMetrics, shiny UI, integration into SpaDES & SyncroSim.
 
 # Results
 
-## Example figure
+TO DO: consider showing results in terms of average number of collars deployed per year rather than target # and renewal interval.
 
 ```{r scn1, cache=TRUE,echo=FALSE, message=FALSE,results='hide'}
 if(runScenarios){
@@ -224,11 +232,6 @@ if(runScenarios){
               lowBound=0,highBound=2000,facetVars=c("P","sQ")))
   dev.off()
 }
-
-```
-
-```{r fig1, fig.cap="Example figure.", cache=TRUE}
-#knitr::include_graphics(here::here("figs/Figure1_Example.png"))
 
 ```
 

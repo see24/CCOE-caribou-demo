@@ -39,7 +39,7 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
                                          numStarts = 30)
   eParsIn$collarOnTime=1
   eParsIn$collarOffTime=12
-  eParsIn$collarNumYears=3
+  eParsIn$collarNumYears=6
 
   ##########
   #Get full set of sims for comparison

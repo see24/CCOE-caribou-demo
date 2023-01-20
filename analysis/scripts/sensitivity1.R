@@ -8,12 +8,11 @@ scn_defaults <- c(eval(formals(fillDefaults)$defList),
 
 ########################
 #sensitivity
-setName = "s1"
-minimalScn = expand.grid(P=1,st=1,cmult=0,ri=1,assessmentYrs=1)
-
-monitoringScns = expand.grid(P=c(1,2,4,8,16),st=c(30,60),cmult=c(2,3,4),ri=c(1,2,4),assessmentYrs=c(1,3))
-stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
-stateScns = merge(stateScns,data.frame(rep=seq(1:100)))
+#setName = "s1"
+#minimalScn = expand.grid(P=1,st=1,cmult=0,ri=1,assessmentYrs=1)
+#monitoringScns = expand.grid(P=c(1,2,4,8,16),st=c(30,60),cmult=c(2,3,4),ri=c(1,2,4),assessmentYrs=c(1,3))
+#stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
+#stateScns = merge(stateScns,data.frame(rep=seq(1:100)))
 
 #monitoringScns = expand.grid(P=c(1,4,16),st=c(60),cmult=c(3),ri=c(1),assessmentYrs=c(3))
 #stateScns = data.frame(tA=c(0,20,40,60),aS=c(0,1,1,1),aSf=c(1,1,1,1))
@@ -22,9 +21,15 @@ stateScns = merge(stateScns,data.frame(rep=seq(1:100)))
 #monitoringScns = expand.grid(P=c(1,4,8,16),st=c(30,60),cmult=c(3),ri=c(1,2,4),assessmentYrs=1)
 #stateScns = expand.grid(iA=c(0),rep=seq(1:30))
 
+setName = "s2"
+monitoringScns = expand.grid(P=c(1,2,4,8,16,24),st=c(15,30,60),cmult=c(3,6,9),ri=c(1,4),assessmentYrs=c(3))
+stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
+stateScns = merge(stateScns,data.frame(rep=seq(1:100)))
+
+
 stateScns$sQ=runif(nrow(stateScns),min=0.01,max=0.99)
 stateScns$rQ = runif(nrow(stateScns),min=0.01,max=0.99)
-monitoringScns=rbind(monitoringScns,minimalScn)
+#monitoringScns=rbind(monitoringScns,minimalScn)
 scns=merge(monitoringScns,stateScns)
 
 scns$iA = scns$tA-scns$P*scns$aS+1
@@ -47,7 +52,7 @@ scns$pageLab = paste0("cmult",scns$cmult,"ay",scns$assessmentYrs,"aSf",scns$aSf)
 scns$pageId = as.numeric(as.factor(scns$pageLab))
 unique(scns$pageId)
 
-write.csv(scns,"tabs/s1.csv",row.names=F)
+write.csv(scns,paste0("tabs/",setName,".csv"),row.names=F)
 pages=unique(scns$pageLab)
 
 #DO - add minimal monitoring.

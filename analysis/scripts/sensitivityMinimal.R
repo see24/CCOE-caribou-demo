@@ -1,20 +1,29 @@
 #!/usr/bin/env Rscript
 
 #Run scenario batches on cloud machine
-#assuming workingDir is where we are, cmd line invocation is
+#assuming workingDir is where we are, cmd li{ne invocation is
 #Rscript --vanilla ./cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R 1
+#Rscript --vanilla ./analysis/scripts/sensitivityMinimal.R 1 "local"
+#nohup Rscript --vanilla ./analysis/scripts/sensitivityMinimal.R 1 "local" &
 
 args = commandArgs(trailingOnly=TRUE)
 #args=1
-baseDir = getwd()
-print(baseDir)
-workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper")
-#baseDir = "C:/Users/HughesJo/Documents/"; workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper")
+if(args[2]!="local"){
+  baseDir = getwd()
+  print(baseDir)
+  workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper")
+  toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
+  libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
 
-toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
-libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
+}else{
+  baseDir = "C:/Users/HughesJo/Documents"
+  workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
+  toolDir = paste0(baseDir,"/gitprojects/BayesianCaribouDemographicProjection")
+  libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
+}
+
 cpageId=args[1] #which batch?
-setName = "s1"
+setName = "s2"
 
 #######################
 setwd(workingDir)
@@ -49,7 +58,7 @@ setwd(toolDir)
 source("CaribouDemoFns.R")
 simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
-scResults = runScnSet(scns[1,],eParsIn,simBig,getKSDists=F,printProgress=F)
+scResults = runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
 setwd(workingDir)
 
 saveRDS(scResults,paste0("results/",setName,"/r",cpageId,".Rds"))
