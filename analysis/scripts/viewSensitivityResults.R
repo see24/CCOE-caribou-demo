@@ -8,8 +8,8 @@ scn_defaults <- c(eval(formals(fillDefaults)$defList),
 
 ########################
 #sensitivity
-setName = "s1"
-scns = read.csv(here::here("tabs/s1.csv"))
+setName = "s2"
+scns = read.csv(here::here("tabs/s2.csv"))
 scns = subset(scns,cmult!=0)
 pages=unique(scns$pageId)
 unique(scns$pageLab)
