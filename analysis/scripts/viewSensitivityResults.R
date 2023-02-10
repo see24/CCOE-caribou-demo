@@ -27,20 +27,27 @@ for(cpageId in pages){
   probs$AssessmentYear = probs$Year
 
   #See disturbance scenarios
-  distScns = subset(probs,is.element(projectionTime,c(0,5,20))|(Year==iYr))
+  #distScns = subset(probs,is.element(projectionTime,c(0,5,20))|(Year==iYr))
+  distScns = subset(probs,is.element(projectionTime,c(0,5,20))|(Year<2023))
   distScns$grp = paste0(distScns$Anthro2023,distScns$aSf)
-  distScns$Timeline[distScns$Year==2023]="Final monitoring year"
-  distScns$Timeline[distScns$projectionTime==5]="AssessmentYear 2028"
-  distScns$Timeline[distScns$projectionTime==20]="AssessmentYear 2043"
-  distScns$Timeline[distScns$Year<2023]= paste("Start",distScns$P[distScns$Year<2023],"yrs of monitoring")
+
+  distScns$Timeline[distScns$Year==2023]="Finish monitoring"
+  distScns$Timeline[distScns$projectionTime==5]="Assessment 2028"
+  distScns$Timeline[distScns$projectionTime==20]="Assessment 2043"
+  distScns$Timeline[distScns$Year<2023]= paste("Start",distScns$P[distScns$Year<2023],"yrs monitoring")
 
   startLevels = unique(distScns$Timeline[distScns$Year<2023])
-  distScns$Timeline = factor(distScns$Timeline,levels=c(startLevels,"Final monitoring year","AssessmentYear 2028","AssessmentYear 2043"))
+  #distScns$Timeline = factor(distScns$Timeline,levels=c(startLevels[length(startLevels):1],"Finish monitoring","Assessment 2028","Assessment 2043"))
+  distScns$Anthro2023=as.character(distScns$Anthro2023)
 
+  timelineLabs = unique(subset(distScns,(Year==iYr)|(Year>=2023),select=c(Year,Timeline,Anthro,Anthro2023,grp)))
+  timelineLabs = timelineLabs[order(timelineLabs$Year),]
+  distScns$Anthro=pmax(0,distScns$Anthro) #temp: remove this is next round of analysis. Problem fixed where it should be.
   png(here::here(paste0("figs/",setName,"/distScns",p,".png")),
       height = 4, width = 5.51, units = "in",res=600)
-  base=ggplot(distScns,aes(x=Year,y=Anthro,col=Anthro2023,shape=Timeline,group=grp))+geom_line()+geom_point()+
-    theme_bw()+xlab("Year")+ylab("Anthropogenic Disturbance")
+  base=ggplot(distScns,aes(x=Year,y=Anthro,col=Anthro2023,group=grp))+geom_line()+geom_point(data=timelineLabs)+
+    theme_bw()+theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8)) +
+    scale_x_continuous(name="Timeline", breaks=timelineLabs$Year, labels=timelineLabs$Timeline)+ylab("Anthropogenic Disturbance")
   print(base)
   dev.off()
 
@@ -85,7 +92,7 @@ for(cpageId in pages){
 
   ################
   #summarize outcome - proportion wrong
-
+  str(probs)
   groupVars = c("Anthro","Anthro2023","AssessmentYear",setdiff(names(scns),c("rQ","sQ","rep")))
   probsSum <- probs %>% group_by(across(groupVars)) %>% summarize(propWrong = mean(wrong))
   probsSum <- subset(probsSum,P>0)
@@ -95,17 +102,28 @@ for(cpageId in pages){
   probsSum$pageLabC = probsSum$pageLab
   pagesC=unique(probsSum$pageLabC)
 
-  probsSum$RenewalInterval=probsSum$ri
+  probsSum$RenewalInterval=as.factor(probsSum$ri)
   probsSum$NumCollars = as.factor(probsSum$st)
 
+  probsSum$CollarYrs = as.numeric(as.character(probsSum$NumCollars))*probsSum$P
   for(pp in pagesC){
+    #pp=pagesC[1]
     png(here::here(paste0("figs/",setName,"/power",pp,".png")),
         height = 4, width = 7.48, units = "in",res=600)
-    base=ggplot(subset(probsSum,pageLabC==pp),aes(x=P,y=1-propWrong,linetype=NumCollars,col=RenewalInterval,group=grp))+geom_line()+
+    base=ggplot(subset(probsSum,pageLabC==pp),aes(x=1-propWrong,y=P,col=NumCollars,linetype=RenewalInterval,group=grp))+geom_line()+
       facet_grid(AssessmentYear~Anthro2023,labeller="label_both")+
-      theme_bw()+xlab("years of monitoring")+ylab("Probability of correct status assessment")
+      theme_bw()+ylab("years of monitoring")+xlab("Probability of correct status assessment")
     print(base)
     dev.off()
+
+    png(here::here(paste0("figs/",setName,"/powerEffort",pp,".png")),
+        height = 4, width = 7.48, units = "in",res=600)
+    base=ggplot(subset(probsSum,pageLabC==pp),aes(x=CollarYrs,y=1-propWrong,linetype=RenewalInterval,col=NumCollars,group=grp))+geom_line()+
+      facet_grid(AssessmentYear~Anthro2023,labeller="label_both")+
+      theme_bw()+xlab("years of monitoring * NumCollars")+ylab("Probability of correct status assessment")
+    print(base)
+    dev.off()
+
   }
 }
 

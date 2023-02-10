@@ -1,5 +1,5 @@
 ---
-title: "Caribou Demographic Projection - interesting & informative title TBD"
+title: "National demographic-disturbance relationships and local monitoring both reduce uncertainty in projections of boreal caribou population viability: A Bayesian integrated population model, demographic simulations and a Shiny interface show how"
 author:
   - name: Josie Hughes
     email: josie.hughes@ec.gc.ca
@@ -65,6 +65,8 @@ knitr::opts_chunk$set(
 ```
 
 <!-- The actual document text starts here: -->
+# Abstract
+Across fifty-eight boreal caribou ranges in Canada, both survival and recruitment decrease with the percentage of the range that is within five hundred metres of anthropogenic disturbance. However, there is also variation in demographic rates among ranges particularly where anthropogenic disturbance is low, and this variation leads to uncertainty in demographic projections derived from national disturbance-demographic relationships. Demographic projections derived from local range-specific demographic data are also uncertain because few places have enough long-term monitoring data to characterize local demographic-disturbance relationships. We present a simple Bayesian integrated population model to integrate prior information from national analysis of demographic-disturbance relationships with available local demographic data to reduce uncertainty in population viability projections. We combine this model with methods for simulating local population dynamics and monitoring to show how monitoring requirements depend on landscape condition. Where projected anthropogenic disturbance is very high or very low, reasonably accurate status projections can be made using only national demographic-disturbance relationships. Where uncertainty is higher, deploying few collars for more years may be a lower cost option for improving the reliability of status projections. We provide an R Shiny interface to enable others to explore the implications of alternative monitoring scenarios, disturbance trajectories, priors, and other model parameters for boreal caribou demographic projections.
 
 # Introduction
 
@@ -193,7 +195,7 @@ relevant refs: [@rettie_summary_2017];?
 
 source(here::here("analysis/scripts/formatScenarios.R"))
 
-knitr::kable(tbl,caption="Monitoring scenarios parameters and values (example values to stimulate discussion - what should these numbers be and why?)")
+knitr::kable(tbl,caption="Monitoring scenarios parameters and values.")
 ```
 
 *Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
@@ -206,8 +208,8 @@ TO DO: run low initial population size scenario, put in appendix of one by one s
 
 TO DO: calculate change in anthro disturbance over 5 yrs across ranges to get realistic distribution of numbers of this & justify choice of parameters. run alternative scenario to put in one by one sensitivity appendix.
 
-```{r fig1, fig.cap="Anthropogenic disturbance and monitoring scenarios (examples to stimulate discussion).", cache=TRUE}
-knitr::include_graphics(here::here("figs/forPaper/distScnscmult3ay1aSf1.png"))
+```{r fig1, fig.cap="Anthropogenic disturbance and monitoring scenarios.", cache=TRUE}
+knitr::include_graphics(here::here("figs/forPaper/distScnscmult3ay3aSf1.png"))
 
 ```
 
@@ -234,6 +236,14 @@ if(runScenarios){
 }
 
 ```
+
+```{r fig2, fig.cap="Power analysis example result.", cache=TRUE}
+knitr::include_graphics(here::here("figs/forPaper/powercmult3ay3aSf1.png"))
+knitr::include_graphics(here::here("figs/forPaper/powerEffortcmult3ay3aSf1.png"))
+
+#TO DO: figure out how to put no monitoring results on these graphs.
+```
+
 
 # Discussion
 

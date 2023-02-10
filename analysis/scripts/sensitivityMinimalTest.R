@@ -4,7 +4,7 @@
 #assuming workingDir is where we are, cmd li{ne invocation is
 #Rscript --vanilla ./cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R 1
 #Rscript --vanilla ./analysis/scripts/sensitivityMinimal.R 1 "local"
-#nohup Rscript --vanilla ./analysis/scripts/sensitivityMinimal.R 1 "local" &
+#nohup Rscript --vanilla ./analysis/scripts/sensitivityMinimalTest.R 1 "local" &
 
 args = commandArgs(trailingOnly=TRUE)
 #args=1
@@ -23,7 +23,7 @@ if(args[2]!="local"){
 }
 
 cpageId=args[1] #which batch?
-setName = "s3"
+setName = "s2"
 
 #######################
 setwd(workingDir)
@@ -58,8 +58,8 @@ setwd(toolDir)
 source("CaribouDemoFns.R")
 simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
-scResults = runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
+scResults = runScnSet(scns[1,],eParsIn,simBig,getKSDists=F,printProgress=F)
 setwd(workingDir)
 
-saveRDS(scResults,paste0("results/",setName,"/r",cpageId,".Rds"))
+saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 
