@@ -8,17 +8,26 @@
 
 args = commandArgs(trailingOnly=TRUE)
 #args=1
-if(args[2]!="local"){
+if(args[2]=="local"){
+  baseDir = "C:/Users/HughesJo/Documents"
+  workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
+  toolDir = paste0(baseDir,"/gitprojects/BayesianCaribouDemographicProjection")
+  libDir = paste0(baseDir,"")
+}else if (args[2]=="local_SE"){
+  baseDir = "C:/Users/EndicottS/Documents"
+  workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
+  toolDir = paste0(baseDir,"/gitprojects/BayesianCaribouDemographicProjection")
+  libDir = paste0("C:/Users/endicotts/AppData/Local/Programs/R/R-4.2.1/library")
+}else if (args[2]=="local_docker"){
+  baseDir = "home"
+  workingDir = paste0(baseDir,"project")
+  toolDir = paste0(baseDir,"tool")
+  libDir = NULL
+}else{
   baseDir = getwd()
   print(baseDir)
   workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper")
   toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
-  libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
-
-}else{
-  baseDir = "C:/Users/HughesJo/Documents"
-  workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
-  toolDir = paste0(baseDir,"/gitprojects/BayesianCaribouDemographicProjection")
   libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
 }
 
