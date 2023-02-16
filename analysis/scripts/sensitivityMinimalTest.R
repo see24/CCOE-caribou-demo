@@ -26,9 +26,9 @@ if(args[2]=="local"){
 }else{
   baseDir = getwd()
   print(baseDir)
-  workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper")
-  toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
-  libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
+  workingDir = paste0(baseDir,"Caribou-Demographic-Projection-Paper")
+  toolDir = paste0(baseDir,"BayesianCaribouDemographicProjection")
+  libDir = NULL
 }
 
 cpageId=args[1] #which batch?

@@ -23,8 +23,11 @@ survival,
 gdata, 
 data.table, 
 tidyr, 
-caribouMetrics
+caribouMetrics,
+pfocal
 
+Remotes: LandSciTech/pfocal,
+LandSciTech/caribouMetrics
 Suggests: devtools,
     git2r
 URL: https://github.com/LandSciTech/Caribou-Demographic-Projection-Paper
