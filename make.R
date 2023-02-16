@@ -9,7 +9,7 @@
 #' @date 2023/02/16
 
 
-install.packages("devtools")
+install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 
 devtools::install_deps(upgrade = "never")
