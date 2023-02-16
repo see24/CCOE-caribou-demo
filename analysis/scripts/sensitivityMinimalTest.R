@@ -26,8 +26,10 @@ if(args[2]=="local"){
 }else{
   baseDir = getwd()
   print(baseDir)
-  workingDir = paste0(baseDir,"Caribou-Demographic-Projection-Paper")
-  toolDir = paste0(baseDir,"BayesianCaribouDemographicProjection")
+  workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
+  print(workingDir)
+  toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
+  print(toolDir)
   libDir = NULL
 }
 

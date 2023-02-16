@@ -12,7 +12,7 @@
 install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 
-devtools::install_deps(upgrade = "never")
+devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never")
 
 
 ## Load Project Addins (R Functions and Packages) ----
