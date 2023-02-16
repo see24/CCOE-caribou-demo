@@ -30,7 +30,7 @@ if(args[2]=="local"){
   print(workingDir)
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
   print(toolDir)
-  libDir = .libPaths()
+  libDir = "R-packages"
   print(libDir)
 }
 
