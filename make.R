@@ -14,6 +14,7 @@ install.packages("devtools", dependencies = TRUE)
 
 devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never")
 
+devtools::install_github("LandSciTech/caribouMetrics")
 
 ## Load Project Addins (R Functions and Packages) ----
 

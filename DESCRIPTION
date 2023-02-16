@@ -17,7 +17,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports:
-    caribouMetrics,
     devtools,
     dplyr,
     ggplot2,
@@ -30,4 +29,3 @@ Imports:
     survival,
     data.table,
     tidyr
-Remotes: LandSciTech/caribouMetrics
