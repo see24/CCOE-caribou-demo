@@ -30,7 +30,8 @@ if(args[2]=="local"){
   print(workingDir)
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
   print(toolDir)
-  libDir = NULL
+  libDir = .libPaths()
+  print(libDir)
 }
 
 cpageId=args[1] #which batch?
