@@ -32,6 +32,7 @@ if(args[2]=="local"){
   print(toolDir)
   libDir = "R-packages"
   print(libDir)
+  print(installed.packages()[,1:2])
 }
 
 cpageId=args[1] #which batch?
