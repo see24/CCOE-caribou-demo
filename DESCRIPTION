@@ -1,34 +1,33 @@
 Package: Caribou-Demographic-Projection-Paper
-Title: What the Package Does (One Line, Title Case)
+Type: Package
+Title: The Title of the Project
 Version: 0.0.0.9000
-Authors@R:
-    c(person("Josie", "Hughes", role = c("aut"), email = "josie.hughes@canada.ca"),
-      person("Sarah", "Endicott", , "sarah.endicott@canada.ca", role = c("aut"),
-             comment = c(ORCID = "0000-0001-9644-5343")))
-Description: What the package does (one paragraph).
-License: MIT + file LICENSE
-ByteCompile: true
+Authors@R: c(
+    person(given   = "Sarah",
+           family  = "Endicott",
+           role    = c("aut", "cre", "cph"),
+           email   = "sarah.endicott@canada.ca",
+           comment = c(ORCID = "0000-0001-9644-5343")))
+Description: A paragraph providing a full description of the project (on 
+    several lines...)
+URL: https://github.com/see24/Caribou-Demographic-Projection-Paper
+BugReports: https://github.com/see24/Caribou-Demographic-Projection-Paper/issues
+License: {{license}}
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
-Imports: R2jags,
-gdata, 
-mcmcplots,
-ggplot2,
-RODBC,
-plyr, 
-dplyr, 
-survival, 
-gdata, 
-data.table, 
-tidyr, 
-caribouMetrics,
-pfocal
-
-Remotes: LandSciTech/pfocal,
-LandSciTech/caribouMetrics
-Suggests: devtools,
-    git2r
-URL: https://github.com/LandSciTech/Caribou-Demographic-Projection-Paper
-BugReports: https://github.com/LandSciTech/Caribou-Demographic-Projection-Paper/issues
+RoxygenNote: 7.2.1
+Imports:
+    caribouMetrics,
+    devtools,
+    dplyr,
+    ggplot2,
+    R2jags,
+    here,
+    gdata,
+    mcmcplots,
+    RODBC,
+    plyr,
+    survival,
+    data.table,
+    tidyr
+Remotes: LandSciTech/caribouMetrics
