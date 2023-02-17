@@ -13,11 +13,11 @@
 bspm::enable()
 options(pkgType="binary", install.packages.check.source = "no")
 
-install.packages("devtools", dependencies = TRUE)
+utils::install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
-
+print("install deps")
 devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never")
-
+warning("install caribouMetrics from GitHub")
 devtools::install_github("LandSciTech/caribouMetrics", type = "source")
 
 ## Load Project Addins (R Functions and Packages) ----
