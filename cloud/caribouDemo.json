@@ -1,0 +1,33 @@
+{
+    "id": "test_outFile",
+    "commandLine": "bash -c 'sh run_caribou.sh'",
+	"outputFiles": [{
+		"destination": {
+			"container": {
+				"containerUrl": "[Blob URL with SAS Token]"
+			}
+		},
+		"filePattern": "**/*.Rds",
+		"uploadOptions": {
+			"uploadCondition": "taskcompletion"
+		}
+	}
+	],
+	
+	"resourceFiles": [{
+		"autoStorageContainerName": "sendicott"
+	}
+	
+	],
+
+	"containerSettings": {
+    "imageName": "rocker/r-bspm:jammy",
+    "containerRunOptions": "--rm"
+	},
+    "userIdentity": {
+        "autoUser": {
+            "scope": "task",
+            "elevationLevel": "admin"
+        }
+    }
+}
