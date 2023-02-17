@@ -18,8 +18,7 @@ utils::install.packages("devtools", dependencies = TRUE)
 print("install deps")
 try(devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
 message("install caribouMetrics from GitHub")
-options(pkgType = "both")
-devtools::install_github("LandSciTech/caribouMetrics", type = "source")
+devtools::install_github("LandSciTech/caribouMetrics")
 
 ## Load Project Addins (R Functions and Packages) ----
 
