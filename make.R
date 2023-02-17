@@ -8,7 +8,11 @@
 #'
 #' @date 2023/02/16
 
+# I copied these from the rocker/r-bspm Dockerfile because it sets them in the
+# RProfile but it wasn't working
 bspm::enable()
+options(pkgType="binary-source")
+
 install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 
