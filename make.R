@@ -48,3 +48,9 @@ try(remotes::install_github("LandSciTech/caribouMetrics",
 
 # List all R scripts in a sequential order and using the following form:
 # source(here::here("analyses", "script_X.R"))
+
+# code to make commands for all batches to use in bash script
+# cat(paste0('nohup Rscript "Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R" ',
+#        1:24,
+#        ' "cloud"', sep = "\n"))
+
