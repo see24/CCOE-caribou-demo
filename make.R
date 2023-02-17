@@ -11,7 +11,7 @@
 # I copied these from the rocker/r-bspm Dockerfile because it sets them in the
 # RProfile but it wasn't working
 bspm::enable()
-options(pkgType="binary", install.packages.check.source = "no")
+options(pkgType="both", install.packages.check.source = "no")
 
 utils::install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
