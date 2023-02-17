@@ -17,17 +17,20 @@ utils::install.packages("remotes", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 print("install deps")
 try(remotes::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
+try(remotes::install_deps("Caribou-Demographic-Projection-Paper", type = "source",
+                          upgrade = "never"))
 
 message("install caribouMetrics from GitHub")
-# do this separately so they can be installed from binaries
+
+# do deps separately so they can be installed from binaries
 cm_download <- remotes::remote_download(remotes::github_remote("LandSciTech/caribouMetrics"))
 
-try(remotes::install_deps(cm_download))
+try(remotes::install_deps(cm_download), upgrade = "never")
 # this should do ones that were not available from binary
-try(remotes::install_deps(cm_download), type = "source")
+try(remotes::install_deps(cm_download), type = "source", upgrade = "never")
 
 try(remotes::install_github("LandSciTech/caribouMetrics",
-                             type = "source", dependencies = FALSE))
+                             type = "source", dependencies = FALSE, upgrade = "never"))
 
 
 
