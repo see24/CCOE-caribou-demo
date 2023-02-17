@@ -8,7 +8,7 @@
 #'
 #' @date 2023/02/16
 
-
+bspm::enable()
 install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 
