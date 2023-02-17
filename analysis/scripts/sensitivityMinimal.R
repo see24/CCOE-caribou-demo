@@ -11,9 +11,16 @@ args = commandArgs(trailingOnly=TRUE)
 if(args[2]!="local"){
   baseDir = getwd()
   print(baseDir)
-  workingDir = paste0(baseDir,"/cloudDeploymentSandbox/Caribou-Demographic-Projection-Paper/Caribou-Demographic-Projection-Paper")
-  toolDir = paste0(baseDir,"/cloudDeploymentSandbox/BayesianCaribouDemographicProjection")
-  libDir = paste0(baseDir,"/cloudDeploymentSandbox/Rpackages")
+  workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
+  print(workingDir)
+  toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
+  print(toolDir)
+  libDir = NULL
+  cat("libDir")
+  print(libDir)
+  cat(".lipPaths")
+  print(.libPaths())
+  print(installed.packages()[,1:2])
 
 }else{
   baseDir = "C:/Users/HughesJo/Documents"
