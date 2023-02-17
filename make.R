@@ -8,17 +8,13 @@
 #'
 #' @date 2023/02/16
 
-# I copied these from the rocker/r-bspm Dockerfile because it sets them in the
-# RProfile but it wasn't working
-bspm::enable()
-options(pkgType="binary", install.packages.check.source = "no")
-
 utils::install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 print("install deps")
 try(devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
+
 message("install caribouMetrics from GitHub")
-devtools::install_github("LandSciTech/caribouMetrics", type = "source")
+devtools::install_github("LandSciTech/caribouMetrics")
 
 ## Load Project Addins (R Functions and Packages) ----
 
