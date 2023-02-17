@@ -50,7 +50,7 @@ eParsIn$freqStartsByYear <- data.frame(Year = 1981:2023,
                                        numStarts = 30)
 eParsIn$collarOnTime=1
 eParsIn$collarOffTime=12
-eParsIn$collarNumYears=3
+eParsIn$collarNumYears=6
 
 
 setwd(toolDir)

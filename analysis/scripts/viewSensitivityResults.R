@@ -21,6 +21,37 @@ for(cpageId in pages){
   if(!file.exists(paste0("results/",setName,"/r",cpageId,".Rds"))){next}
   scResults = readRDS(paste0("results/",setName,"/r",cpageId,".Rds"))
 
+  #show examples projections
+  exResults = subset(scResults$rr.summary.all,(st==30)&(ri==4)&(Parameter=="Population growth rate"))
+  exResults$meanQ = (exResults$rQ+exResults$sQ)/2
+  grpID = subset(exResults,select=c(tA,P,meanQ)) %>% group_by(tA,P) %>%
+    summarise(minQ = min(meanQ),maxQ=max(meanQ))
+
+  exResults=merge(exResults,grpID)
+  exResults$quantile[exResults$meanQ == exResults$maxQ]="high"
+  exResults$quantile[exResults$meanQ == exResults$minQ]="low"
+  exResults = subset(exResults,!is.na(quantile))
+  exResults$type[exResults$Year<=2023]="estimated"
+  exResults$type[exResults$Year>2023]="projected"
+  exResults$grp = paste(exResults$type,exResults$quantile, exResults$tA,exResults$P)
+  exResults$Anthro2023 = exResults$tA
+
+  obs = subset(scResults$obs.all,(st==30)&(ri==4)&(parameter=="Population growth rate"))
+  obs = merge(obs,unique(subset(exResults,select=c(tA,P,rQ,sQ,quantile,grp,Anthro2023))))
+  obs$type = "true"
+
+  png(here::here(paste0("figs/",setName,"/examples.png")),
+      height = 6, width = 5.56, units = "in",res=600)
+  base=ggplot(exResults,aes(x=Year,y=Mean,col=quantile,group=grp,linetype=type))+geom_line(show.legend=T)+
+    geom_ribbon(aes(ymin = `Lower 95% CRI`, ymax = `Upper 95% CRI`,fill=quantile),
+                show.legend = FALSE, alpha = 0.25,col=NA)+
+    geom_line(data=obs,aes(x=Year,y=Mean, col=quantile,group=grp,linetype=type),show.legend=T)+
+    theme_bw()+facet_grid(P~Anthro2023,labeller = "label_both")+ylab("Population growth rate")+
+    theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8))+
+    geom_hline(yintercept=1, color = "black",size=0.7)
+  print(base)
+  dev.off()
+
   probs = subset(scResults$rr.summary.all,(Parameter=="Population growth rate"))
   probs$projectionTime = probs$Year-2023
   probs$Anthro2023 = probs$tA

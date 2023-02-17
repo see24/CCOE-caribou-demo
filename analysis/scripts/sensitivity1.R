@@ -16,6 +16,8 @@
 #monitoringScns = expand.grid(P=c(1,4,8,16),st=c(30,60),cmult=c(3),ri=c(1,2,4),assessmentYrs=1)
 #stateScns = expand.grid(iA=c(0),rep=seq(1:30))
 
+#TO DO: adjust method so all
+
 setName = "s3"
 monitoringScns = expand.grid(P=c(1,2,4,8,16,24),st=c(1,15,30,60),cmult=c(3,6,9),ri=c(1,4),assessmentYrs=c(3))
 stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
