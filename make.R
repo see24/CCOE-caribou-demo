@@ -8,6 +8,10 @@
 #'
 #' @date 2023/02/16
 
+utils::install.packages("rspm")
+
+rspm::enable()
+
 utils::install.packages("devtools", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 print("install deps")
