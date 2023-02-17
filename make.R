@@ -13,27 +13,27 @@
 bspm::enable()
 options(pkgType="binary", install.packages.check.source = "no")
 
-utils::install.packages("devtools", dependencies = TRUE)
+utils::install.packages("remotes", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 print("install deps")
-try(devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
+try(remotes::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
 
 message("install caribouMetrics from GitHub")
 # do this separately so they can be installed from binaries
-try(
-  remotes::install_deps(
-    remotes::remote_download(
-      remotes::github_remote("LandSciTech/caribouMetrics"))))
+cm_download <- remotes::remote_download(remotes::github_remote("LandSciTech/caribouMetrics"))
 
+try(remotes::install_deps(cm_download))
+# this should do ones that were not available from binary
+try(remotes::install_deps(cm_download), type = "source")
 
-try(devtools::install_github("LandSciTech/caribouMetrics",
+try(remotes::install_github("LandSciTech/caribouMetrics",
                              type = "source", dependencies = FALSE))
 
 
 
 ## Load Project Addins (R Functions and Packages) ----
 
-devtools::load_all(here::here())
+# devtools::load_all(here::here())
 
 
 ## Global Variables ----
