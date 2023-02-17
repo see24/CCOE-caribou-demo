@@ -19,11 +19,17 @@ print("install deps")
 try(devtools::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
 
 message("install caribouMetrics from GitHub")
+# do this separately so they can be installed from binaries
+try(
+  remotes::install_deps(
+    remotes::remote_download(
+      remotes::github_remote("LandSciTech/caribouMetrics"))))
+
+
 try(devtools::install_github("LandSciTech/caribouMetrics",
                              type = "source", dependencies = FALSE))
 
-# do this separately so they can be installed from binaries
-try(devtools::install_deps(file.path(.libPaths(), "caribouMetrics")))
+
 
 ## Load Project Addins (R Functions and Packages) ----
 
