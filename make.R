@@ -25,9 +25,9 @@ message("install caribouMetrics from GitHub")
 # do deps separately so they can be installed from binaries
 cm_download <- remotes::remote_download(remotes::github_remote("LandSciTech/caribouMetrics"))
 
-try(remotes::install_deps(cm_download), upgrade = "never")
+try(remotes::install_deps(cm_download, upgrade = "never"))
 # this should do ones that were not available from binary
-try(remotes::install_deps(cm_download), type = "source", upgrade = "never")
+try(remotes::install_deps(cm_download, type = "source", upgrade = "never"))
 
 try(remotes::install_github("LandSciTech/caribouMetrics",
                              type = "source", dependencies = FALSE, upgrade = "never"))
