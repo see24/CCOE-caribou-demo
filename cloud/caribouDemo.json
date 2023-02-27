@@ -1,10 +1,10 @@
 {
-    "id": "test_outFile",
+    "id": "Sarah_caribouDemog",
     "commandLine": "bash -c 'sh run_caribou.sh'",
 	"outputFiles": [{
 		"destination": {
 			"container": {
-				"containerUrl": "[Blob URL with SAS Token]"
+				"containerUrl": "<SASURL>"
 			}
 		},
 		"filePattern": "**/*.Rds",
