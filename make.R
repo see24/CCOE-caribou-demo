@@ -7,6 +7,9 @@
 #' @author Sarah Endicott \email{sarah.endicott@canada.ca}
 #'
 #' @date 2023/02/16
+if(!requireNamespace("bspm", quietly = TRUE)){
+  install.packages("bspm")
+}
 
 # I copied these from the rocker/r-bspm Dockerfile because it sets them in the
 # RProfile but it wasn't working
