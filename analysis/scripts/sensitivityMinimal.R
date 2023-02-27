@@ -10,18 +10,9 @@ args = commandArgs(trailingOnly=TRUE)
 #args=1
 if(args[2]!="local"){
   baseDir = getwd()
-  print(baseDir)
   workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
-  print(workingDir)
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
-  print(toolDir)
   libDir = NULL
-  cat("libDir")
-  print(libDir)
-  cat(".lipPaths")
-  print(.libPaths())
-  print(installed.packages()[,1:2])
-
 }else{
   baseDir = "C:/Users/HughesJo/Documents"
   workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
@@ -31,7 +22,7 @@ if(args[2]!="local"){
 
 cpageId=args[1] #which batch?
 setName = "s3"
-
+message("batch ", args[1], " started")
 #######################
 setwd(workingDir)
 dir.create(paste0("figs/",setName),recursive=T)
@@ -70,3 +61,4 @@ setwd(workingDir)
 
 saveRDS(scResults,paste0("results/",setName,"/r",cpageId,".Rds"))
 
+message("batch ", args[1], " completed")

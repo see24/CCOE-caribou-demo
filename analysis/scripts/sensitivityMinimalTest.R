@@ -25,21 +25,15 @@ if(args[2]=="local"){
   libDir = NULL
 }else{
   baseDir = getwd()
-  print(baseDir)
   workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
-  print(workingDir)
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
-  print(toolDir)
   libDir = NULL
-  cat("libDir")
-  print(libDir)
-  cat(".lipPaths")
-  print(.libPaths())
-  print(installed.packages()[,1:2])
 }
 
 cpageId=args[1] #which batch?
 setName = "s2"
+
+message("batch ", args[1], " started")
 
 #######################
 setwd(workingDir)
@@ -74,8 +68,9 @@ setwd(toolDir)
 source("CaribouDemoFns.R")
 simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
-scResults = runScnSet(scns[1,],eParsIn,simBig,getKSDists=F,printProgress=F)
+scResults = runScnSet(scns[1:2,],eParsIn,simBig,getKSDists=F,printProgress=F)
 setwd(workingDir)
 
 saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 
+message("batch ", args[1], " complete")
