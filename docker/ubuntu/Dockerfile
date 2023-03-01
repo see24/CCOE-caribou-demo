@@ -1,16 +1,15 @@
-FROM rocker/r-ubuntu:jammy
+FROM rocker/r-bspm:jammy
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
 	jags
 
-RUN mkdir /home/project
+RUN git clone https://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@github.com/LandSciTech/Caribou-Demographic-Projection-Paper.git
+RUN git clone https://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@github.com/LandSciTech/BayesianCaribouDemographicProjection.git
 
-RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))" \
- && R -e "remotes::install_deps(upgrade = 'never')"
+RUN mkdir R-packages
+RUN export R_LIBS=R-packages
 
-COPY Caribou-Demographic-Projection-Paper /home/project
-COPY BayesianCaribouDemographicProjection /home/tool
+RUN mv "/usr/local/lib/R/site-library/bspm" "/usr/lib/R/library"
 
-CMD cd /home/project/analysis/scripts/ \
-  && nohup Rscript --vanilla sensitivityMinimalTest.R 1 "local_docker" \
+RUN nohup Rscript --vanilla "Caribou-Demographic-Projection-Paper/make.R"
