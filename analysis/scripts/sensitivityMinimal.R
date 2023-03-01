@@ -13,6 +13,7 @@ if(args[2]!="local"){
   workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
   libDir = NULL
+  print(workingDir)
 }else{
   baseDir = "C:/Users/HughesJo/Documents"
   workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
