@@ -13,3 +13,5 @@ RUN export R_LIBS=R-packages
 RUN mv "/usr/local/lib/R/site-library/bspm" "/usr/lib/R/library"
 
 RUN nohup Rscript --vanilla "Caribou-Demographic-Projection-Paper/make.R"
+
+CMD git pull https://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@github.com/LandSciTech/Caribou-Demographic-Projection-Paper.git
