@@ -1,0 +1,33 @@
+{
+    "properties": {
+        "vmSize": "Standard_F8s_v2",
+        "deploymentConfiguration": {
+            "virtualMachineConfiguration": {
+				"imageReference": {
+					"publisher": "microsoft-azure-batch",
+					"offer": "ubuntu-server-container",
+					"sku": "20-04-lts",
+					"version": "latest"
+				},
+				"nodeAgentSKUId": "batch.node.ubuntu 20.04",
+				"containerConfiguration": {
+				  "type": "dockerCompatible",
+				  "containerImageNames": [
+					"rocker/r-bspm:jammy"
+				  ]
+				},
+				"nodePlacementConfiguration": {
+				  "policy": "regional"
+				}
+			}
+        },
+        "scaleSettings": {
+            "fixedScale": {
+                "targetDedicatedNodes": 1
+            }
+        },
+		"networkConfiguration": {
+			"subnetId":"<subnetID>"
+		}
+    }
+}
