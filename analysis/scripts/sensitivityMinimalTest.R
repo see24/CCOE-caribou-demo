@@ -18,13 +18,13 @@ if(args[2]=="local"){
   workingDir = paste0(baseDir,"/gitprojects/Caribou-Demographic-Projection-Paper")
   toolDir = paste0(baseDir,"/gitprojects/BayesianCaribouDemographicProjection")
   libDir = paste0("C:/Users/endicotts/AppData/Local/Programs/R/R-4.2.1/library")
-}else if (args[2]=="local_docker"){
-  baseDir = "home"
+}else if (args[2]=="docker"){
+  baseDir = "/"
   workingDir = paste0(baseDir,"project")
   toolDir = paste0(baseDir,"tool")
   libDir = NULL
 }else{
-  baseDir = "/"
+  baseDir = getwd()
   workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
   libDir = NULL

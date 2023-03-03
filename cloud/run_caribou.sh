@@ -21,9 +21,9 @@ mv "/usr/local/lib/R/site-library/bspm" "/usr/lib/R/library"
 
 echo "Running the scripts"
 nohup Rscript --vanilla "Caribou-Demographic-Projection-Paper/make.R"
-for i in 14 15 16 17 18 19 20 21 22 23 24
+for i in 15 16 18 19 20 21 24
 do
 	echo "Running batch" $i
-	nohup Rscript --vanilla "Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R" $i "cloud" &> nohup_$i.out &
+	nohup Rscript --vanilla "Caribou-Demographic-Projection-Paper/analysis/scripts/sensitivityMinimal.R" $i "cloud" > nohup_$i.out 2>&1 &
 done
 wait

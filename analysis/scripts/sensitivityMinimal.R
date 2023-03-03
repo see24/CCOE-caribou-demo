@@ -9,7 +9,7 @@
 args = commandArgs(trailingOnly=TRUE)
 #args=1
 if(args[2]!="local"){
-  baseDir = "/"
+  baseDir = getwd()
   workingDir = file.path(baseDir,"Caribou-Demographic-Projection-Paper")
   toolDir = file.path(baseDir,"BayesianCaribouDemographicProjection")
   libDir = NULL
