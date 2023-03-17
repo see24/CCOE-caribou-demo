@@ -16,8 +16,8 @@ options(pkgType="binary", install.packages.check.source = "no")
 utils::install.packages("remotes", dependencies = TRUE)
 ## Install Dependencies (listed in DESCRIPTION) ----
 print("install deps")
-try(remotes::install_deps("Caribou-Demographic-Projection-Paper", upgrade = "never"))
-try(remotes::install_deps("Caribou-Demographic-Projection-Paper", type = "source",
+try(remotes::install_deps("/Caribou-Demographic-Projection-Paper", upgrade = "never"))
+try(remotes::install_deps("/Caribou-Demographic-Projection-Paper", type = "source",
                           upgrade = "never"))
 
 message("install caribouMetrics from GitHub")
