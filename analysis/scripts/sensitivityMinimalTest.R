@@ -20,8 +20,8 @@ if(args[2]=="local"){
   libDir = paste0("C:/Users/endicotts/AppData/Local/Programs/R/R-4.2.1/library")
 }else if (args[2]=="docker"){
   baseDir = "/"
-  workingDir = paste0(baseDir,"project")
-  toolDir = paste0(baseDir,"tool")
+  workingDir = paste0(baseDir,"Caribou-Demographic-Projection-Paper")
+  toolDir = paste0(baseDir,"BayesianCaribouDemographicProjection")
   libDir = NULL
 }else{
   baseDir = getwd()
