@@ -28,4 +28,6 @@ Imports:
     plyr,
     survival,
     data.table,
-    tidyr
+    tidyr,
+    doFuture,
+    future
