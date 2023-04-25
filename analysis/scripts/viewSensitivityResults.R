@@ -1,10 +1,8 @@
-#app_path <- "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
 #devtools::load_all(here::here())
 library(tidyverse)
 library(ggplot2)
-source( paste0(app_path,"/CaribouDemoFns.R"))
-scn_defaults <- c(eval(formals(fillDefaults)$defList),
-                  curYear = eval(formals(fillDefaults)$curYear))
+
+scn_defaults <- eval(formals(fillDefaults))
 
 ########################
 #sensitivity

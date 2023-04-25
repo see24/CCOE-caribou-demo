@@ -1,4 +1,3 @@
-#app_path <- "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
 #devtools::load_all(here::here())
 
 ########################

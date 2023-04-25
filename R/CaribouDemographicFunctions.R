@@ -9,27 +9,16 @@
 runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier",getKSDists=T){
   #quants=NULL;Anthro=NULL;survAnalysisMethod="KaplanMeier";getKSDists=F
   retdir <-getwd()
-  wdir <- app_path
 
   dir.create("figs")
   dir.create("tabs")
   dir.create("results")
 
-  source(paste0(wdir,"/CaribouDemoFns.R"))
-
-  scns<-fillDefaults(scns)
-
-  # usage
-  packages <- c("shiny", "R2jags","gdata","mcmcplots",
-                "ggplot2", "rmarkdown", "knitr",
-                "RODBC","plyr","survival","gdata","data.table")
-
-  ipak(packages)
-  load.module("glm")
-
   library(caribouMetrics)
   library(tidyr)
   library(dplyr)
+
+  scns<-fillDefaults(scns)
 
   eParsIn = list()
   eParsIn$cowCounts <- data.frame(Year = 1981:2023,
@@ -45,14 +34,12 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   #Get full set of sims for comparison
 
   if(is.null(quants)){
-    simBig<-getSimsNational(wdir=wdir,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
+    simBig<-getSimsNational(adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
   }else{
-    simBig<-getSimsNational(quants=quants,Anthro=Anthro,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
+    simBig<-getSimsNational(useQuantiles = quants,Anthro=Anthro,adjustR=unique(scns$adjustR))#If called with default parameters, use saved object to speed things up.
   }
 
-  setwd(wdir)
-  scResults = runScnSet(scns,eParsIn,simBig,survAnalysisMethod,getKSDists=getKSDists,printProgress=T)
-  setwd(retdir)
+  scResults = caribouMetrics:::runScnSet(scns,eParsIn,simBig,survAnalysisMethod,getKSDists=getKSDists,printProgress=T)
   return(scResults)
 }
 
@@ -101,7 +88,7 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/Surv", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(plotRes(merge(scResults$rr.summary.all, crow), "Adult female survival",
+      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Adult female survival",
                     obs = merge(scResults$obs.all, crow),
                     lowBound = survLow, simRange = simRange, facetVars = facetVars
       ))
@@ -116,7 +103,7 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/Lambda", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(plotRes(merge(scResults$rr.summary.all, crow), "Population growth rate",
+      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Population growth rate",
                     obs = merge(scResults$obs.all, crow),
                     lowBound = 0, simRange = simRange, facetVars = facetVars
       ))
@@ -131,7 +118,7 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/Rec", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(plotRes(merge(scResults$rr.summary.all, crow), "Recruitment",
+      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Recruitment",
                     obs = merge(scResults$obs.all, crow),
                     lowBound = 0, simRange = simRange, facetVars = facetVars
       ))
@@ -146,7 +133,7 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/FPOP", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(plotRes(merge(scResults$rr.summary.all, crow), "Female population size",
+      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Female population size",
                     obs = merge(scResults$obs.all, crow),
                     lowBound = 0, facetVars = facetVars
       ))

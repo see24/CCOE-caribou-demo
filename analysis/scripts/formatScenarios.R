@@ -1,5 +1,4 @@
 
-#app_path <- "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
 library(caribouMetrics)
 
 rawScns<-read.csv(here::here("tabs/s2.csv"))
