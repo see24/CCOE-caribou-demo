@@ -29,7 +29,7 @@ try(remotes::install_deps(cm_download, upgrade = "never"))
 # this should do ones that were not available from binary
 try(remotes::install_deps(cm_download, type = "source", upgrade = "never"))
 
-try(remotes::install_github("LandSciTech/caribouMetrics",
+try(remotes::install_github("LandSciTech/caribouMetrics", ref = "add-bayes-demog",
                              type = "source", dependencies = FALSE, upgrade = "never"))
 
 
