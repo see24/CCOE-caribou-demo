@@ -8,18 +8,58 @@ scn_defaults <- c(eval(formals(fillDefaults)$defList),
 
 ########################
 #sensitivity
-setName = "s2"
-scns = read.csv(here::here("tabs/s2.csv"))
+setName = "s3"
+scns = read.csv(here::here("tabs/s3.csv"))
 scns = subset(scns,cmult!=0)
-pages=unique(scns$pageId)
-unique(scns$pageLab)
+pagesa=unique(scns$pageId)
 
-for(cpageId in pages){
-  #cpageId=pages[1]
-  p = scns$pageLab[scns$pageId==cpageId]
+pages = pagesa
+for (p in pagesa){
+  if(!file.exists(paste0("results/",setName,"/r",p,".Rds"))){pages=pages[pages!=p]}
+}
 
-  if(!file.exists(paste0("results/",setName,"/r",cpageId,".Rds"))){next}
-  scResults = readRDS(paste0("results/",setName,"/r",cpageId,".Rds"))
+batchStrip<-function(l,batches=seq(1:4)){
+  for(b in batches){
+    l=gsub(paste0("repBatch",b),"",l,fixed=T)
+  }
+  return(l)
+}
+
+pages=sort(pages)
+
+combine=T
+for(i in 1:length(pages)){
+  #combine=F;i=5
+  cpageId=pages[i]
+
+  if(i==length(pages)){
+    nextP = "Batch1"
+  }else{
+    nextP = unique(scns$pageLab[scns$pageId==pages[i+1]])
+  }
+
+  p = unique(scns$pageLab[scns$pageId==cpageId])
+
+  if(combine&(cpageId>1)){
+    scNew = readRDS(paste0("results/",setName,"/r",cpageId,".Rds"))
+    for(n in names(scNew)){
+      if(n=="errorLog"){
+        scResults[[n]]=c(scResults[[n]],scNew[[n]])
+      }else{
+        scResults[[n]]=rbind(scResults[[n]],scNew[[n]])
+      }
+    }
+  }else{
+    scResults = readRDS(paste0("results/",setName,"/r",cpageId,".Rds"))
+  }
+
+  if(as.numeric(strsplit(nextP,"repBatch")[[1]][2])<=as.numeric(strsplit(p,"repBatch")[[1]][2])){
+    combine=F
+  }else{combine=T;next}
+
+  print(paste(i,p))
+
+  #figure out how to count out errors.
 
   #show examples projections
   exResults = subset(scResults$rr.summary.all,(st==30)&(ri==4)&(Parameter=="Population growth rate"))
@@ -34,14 +74,14 @@ for(cpageId in pages){
   exResults$type[exResults$Year<=2023]="estimated"
   exResults$type[exResults$Year>2023]="projected"
   exResults$grp = paste(exResults$type,exResults$quantile, exResults$tA,exResults$P)
-  exResults$Anthro2023 = exResults$tA
+  exResults$Anthro2023 = pmax(0,exResults$tA-2) #correcting for error - change back in round 4
 
   obs = subset(scResults$obs.all,(st==30)&(ri==4)&(parameter=="Population growth rate"))
   obs = merge(obs,unique(subset(exResults,select=c(tA,P,rQ,sQ,quantile,grp,Anthro2023))))
   obs$type = "true"
 
-  png(here::here(paste0("figs/",setName,"/examples.png")),
-      height = 6, width = 5.56, units = "in",res=600)
+  png(here::here(paste0("figs/",setName,"/examples",batchStrip(p),".png")),
+      height = 6, width = 10.56, units = "in",res=600)
   base=ggplot(exResults,aes(x=Year,y=Mean,col=quantile,group=grp,linetype=type))+geom_line(show.legend=T)+
     geom_ribbon(aes(ymin = `Lower 95% CRI`, ymax = `Upper 95% CRI`,fill=quantile),
                 show.legend = FALSE, alpha = 0.25,col=NA)+
@@ -54,18 +94,26 @@ for(cpageId in pages){
 
   probs = subset(scResults$rr.summary.all,(Parameter=="Population growth rate"))
   probs$projectionTime = probs$Year-2023
-  probs$Anthro2023 = probs$tA
+  probs$Anthro2023 = pmax(0,probs$tA-2) #correcting for error - change back in round 4
   probs$AssessmentYear = probs$Year
+
+  #Error in 24 yr monitoring anthro 20 result - remove for now
+  probs=subset(probs,!((Anthro2023==18)&(P==24)))
+
 
   #See disturbance scenarios
   #distScns = subset(probs,is.element(projectionTime,c(0,5,20))|(Year==iYr))
-  distScns = subset(probs,is.element(projectionTime,c(0,5,20))|(Year<2023))
+  distScns = unique(subset(probs,is.element(projectionTime,c(0,5,20))|(Year<2023),select=c(iYr,projectionTime,Year,P,Anthro2023,Anthro)))
   distScns$grp = paste0(distScns$Anthro2023,distScns$aSf)
 
   distScns$Timeline[distScns$Year==2023]="Finish monitoring"
   distScns$Timeline[distScns$projectionTime==5]="Assessment 2028"
   distScns$Timeline[distScns$projectionTime==20]="Assessment 2043"
-  distScns$Timeline[distScns$Year<2023]= paste("Start",distScns$P[distScns$Year<2023],"yrs monitoring")
+
+  Ps = unique(distScns$P)
+  for(s in Ps){
+    distScns$Timeline[distScns$Year==(2023-s+1)]= paste("Start",s,"yrs monitoring")
+  }
 
   startLevels = unique(distScns$Timeline[distScns$Year<2023])
   #distScns$Timeline = factor(distScns$Timeline,levels=c(startLevels[length(startLevels):1],"Finish monitoring","Assessment 2028","Assessment 2043"))
@@ -73,8 +121,8 @@ for(cpageId in pages){
 
   timelineLabs = unique(subset(distScns,(Year==iYr)|(Year>=2023),select=c(Year,Timeline,Anthro,Anthro2023,grp)))
   timelineLabs = timelineLabs[order(timelineLabs$Year),]
-  distScns$Anthro=pmax(0,distScns$Anthro) #temp: remove this is next round of analysis. Problem fixed where it should be.
-  png(here::here(paste0("figs/",setName,"/distScns",p,".png")),
+
+  png(here::here(paste0("figs/",setName,"/distScns",batchStrip(p),".png")),
       height = 4, width = 5.51, units = "in",res=600)
   base=ggplot(distScns,aes(x=Year,y=Anthro,col=Anthro2023,group=grp))+geom_line()+geom_point(data=timelineLabs)+
     theme_bw()+theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8)) +
@@ -107,7 +155,7 @@ for(cpageId in pages){
   probs$CorrectStatus[probs$wrong]="no"
   probs$CorrectStatus[!probs$wrong]="yes"
 
-  probs$pageLabB = paste0(probs$pageLab,"st",probs$st,"ri",probs$ri)
+  probs$pageLabB = paste0(batchStrip(probs$pageLab),"st",probs$st,"ri",probs$ri)
   pagesB=unique(probs$pageLabB)
 
   for(pp in pagesB){
@@ -123,14 +171,14 @@ for(cpageId in pages){
 
   ################
   #summarize outcome - proportion wrong
-  str(probs)
-  groupVars = c("Anthro","Anthro2023","AssessmentYear",setdiff(names(scns),c("rQ","sQ","rep")))
+  groupVars = c("Anthro","Anthro2023","AssessmentYear",setdiff(names(scns),c("rQ","sQ","rep","pageId","repBatch")))
+  probs$pageLab = batchStrip(probs$pageLab)
   probsSum <- probs %>% group_by(across(groupVars)) %>% summarize(propWrong = mean(wrong))
   probsSum <- subset(probsSum,P>0)
   probsSum$grp = paste(probsSum$st,probsSum$ri)
 
   table(probsSum$grp)
-  probsSum$pageLabC = probsSum$pageLab
+  probsSum$pageLabC = batchStrip(probsSum$pageLab)
   pagesC=unique(probsSum$pageLabC)
 
   probsSum$RenewalInterval=as.factor(probsSum$ri)
@@ -141,9 +189,9 @@ for(cpageId in pages){
     #pp=pagesC[1]
     png(here::here(paste0("figs/",setName,"/power",pp,".png")),
         height = 4, width = 7.48, units = "in",res=600)
-    base=ggplot(subset(probsSum,pageLabC==pp),aes(x=1-propWrong,y=P,col=NumCollars,linetype=RenewalInterval,group=grp))+geom_line()+
+    base=ggplot(subset(probsSum,pageLabC==pp),aes(x=P,y=1-propWrong,col=NumCollars,linetype=RenewalInterval,group=grp))+geom_line()+
       facet_grid(AssessmentYear~Anthro2023,labeller="label_both")+
-      theme_bw()+ylab("years of monitoring")+xlab("Probability of correct status assessment")
+      theme_bw()+xlab("years of monitoring")+ylab("Probability of correct status assessment")
     print(base)
     dev.off()
 
