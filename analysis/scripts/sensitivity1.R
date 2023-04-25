@@ -18,7 +18,7 @@
 
 #TO DO: adjust method so all
 
-setName = "s3"
+setName = "s4"
 monitoringScns = expand.grid(P=c(1,2,4,8,16,24),st=c(1,15,30,60),cmult=c(3,6,9),ri=c(1,4),assessmentYrs=c(3))
 stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
 stateScns = merge(stateScns,data.frame(rep=seq(1:200)))
@@ -28,7 +28,8 @@ stateScns$rQ = runif(nrow(stateScns),min=0.01,max=0.99)
 #monitoringScns=rbind(monitoringScns,minimalScn)
 scns=merge(monitoringScns,stateScns)
 
-scns$iA = pmax(0,scns$tA-(scns$P+1)*scns$aS)
+scns$iA = scns$tA-(scns$P-1)*scns$aS
+unique(scns$iA)
 scns$repBatch = ceiling(scns$rep/50)
 table(scns$repBatch)
 scns$N0 = 1000
