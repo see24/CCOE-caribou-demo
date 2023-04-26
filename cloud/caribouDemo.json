@@ -1,6 +1,6 @@
 {
-    "id": "Sarah_caribouDemog",
-    "commandLine": "bash -c 'sh run_caribou.sh'",
+    "id": "caribou-demog_sens_batch",
+    "commandLine": "bash run_caribou.sh",
 	"outputFiles": [{
 		"destination": {
 			"container": {
@@ -13,20 +13,20 @@
 		}
 	}
 	],
-	
+
 	"resourceFiles": [{
 		"autoStorageContainerName": "sendicott"
 	}
-	
+
 	],
 
 	"containerSettings": {
-    "imageName": "rocker/r-bspm:jammy",
-    "containerRunOptions": "--rm"
+    "imageName": "see24/r-bspm-git-jags-cariboudemogsens:latest",
+    "containerRunOptions": "--rm -v $AZ_BATCH_TASK_WORKING_DIR:/Caribou-Demographic-Projection-Paper/results:rw"
 	},
     "userIdentity": {
         "autoUser": {
-            "scope": "task",
+            "scope": "pool",
             "elevationLevel": "admin"
         }
     }
