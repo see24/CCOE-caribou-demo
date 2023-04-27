@@ -2,7 +2,7 @@
 library(tidyverse)
 library(ggplot2)
 
-scn_defaults <- eval(formals(fillDefaults))
+scn_defaults <- eval(formals(getScenarioDefaults))
 
 ########################
 #sensitivity

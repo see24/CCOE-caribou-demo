@@ -68,7 +68,7 @@ setwd(toolDir)
 source("CaribouDemoFns.R")
 simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
-scResults = runScnSet(scns[1:2,],eParsIn,simBig,getKSDists=F,printProgress=F)
+scResults = caribouMetrics:::runScnSet(scns[1:2,],eParsIn,simBig,getKSDists=F,printProgress=F)
 setwd(workingDir)
 
 saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
