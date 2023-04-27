@@ -1,6 +1,11 @@
 #devtools::load_all(here::here())
 library(tidyverse)
 library(ggplot2)
+library(caribouMetrics)
+library(RColorBrewer)
+
+pal2 = brewer.pal(7,"RdBu")[c(2,6)]
+pal4 = brewer.pal(5,"RdBu")[c(1,2,4,5)]
 
 scn_defaults <- eval(formals(fillDefaults))
 
@@ -86,7 +91,7 @@ for(i in 1:length(pages)){
     geom_line(data=obs,aes(x=Year,y=Mean, col=quantile,group=grp,linetype=type),show.legend=T)+
     theme_bw()+facet_grid(P~Anthro2023,labeller = "label_both")+ylab("Population growth rate")+
     theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8))+
-    geom_hline(yintercept=1, color = "black",size=0.7)
+    geom_hline(yintercept=1, color = "black",size=0.7)+scale_fill_discrete(type=pal2)+scale_color_discrete(type=pal2)
   print(base)
   dev.off()
 
