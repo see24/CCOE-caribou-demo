@@ -7,7 +7,7 @@ library(RColorBrewer)
 pal2 = brewer.pal(7,"RdBu")[c(2,6)]
 pal4 = brewer.pal(5,"RdBu")[c(1,2,4,5)]
 
-scn_defaults <- eval(formals(fillDefaults))
+scn_defaults <- eval(formals(getScenarioDefaults))
 
 ########################
 #sensitivity
