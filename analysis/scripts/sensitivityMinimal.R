@@ -10,7 +10,7 @@
 library(doFuture)
 library(caribouMetrics)
 
-setName = "s3"
+setName = "s4"
 
 #######################
 dir.create(paste0("figs/",setName),recursive=T)
