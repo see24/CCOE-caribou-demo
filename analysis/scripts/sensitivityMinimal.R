@@ -20,6 +20,7 @@ dir.create(paste0("results/",setName),recursive=T)
 simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
 allScns = read.csv(paste0("tabs/",setName,".csv"))
+n_batches <- length(unique(allScns$pageId))
 
 ####################
 eParsIn = list()
