@@ -1,13 +1,26 @@
 
+#app_path <- "C:/Users/HughesJo/Documents/gitprojects/BayesianCaribouDemographicProjection"
 library(caribouMetrics)
 
 rawPriors<-getPriors(returnValues=F)
 
+#tbl <- data.frame()
+"Parameter|Description|Mean|Standard Deviation
+"
+
 nameSet <- gsub(".Prior1","",names(rawPriors)[grepl("Prior1",names(rawPriors))],fixed=T)
 
-tbl <- data.frame(name = nameSet,
-                  Mean = unlist(rawPriors[paste0(nameSet,".Prior1")], use.names = FALSE),
-                  SD = unlist(rawPriors[paste0(nameSet,".Prior2")], use.names = FALSE))
+start=T
+for(n in nameSet){
+  crow = data.frame(name=n,Mean=rawPriors[[paste0(n,".Prior1")]],SD=rawPriors[[paste0(n,".Prior2")]])
+
+  if(start){
+    tbl = crow
+    start=F
+  }else{
+    tbl=rbind(tbl,crow)
+  }
+}
 
 pars <- data.frame(name="l.R",Parameter="$\\beta^R_0$",Description="R intercept")
 pars<-rbind(pars,data.frame(name="beta.Rec.anthro",Parameter="$\\beta^R_a$",Description="R anthro slope"))
