@@ -120,16 +120,21 @@ for(i in 1:length(pages)){
 
   startLevels = unique(distScns$Timeline[distScns$Year<2023])
   #distScns$Timeline = factor(distScns$Timeline,levels=c(startLevels[length(startLevels):1],"Finish monitoring","Assessment 2028","Assessment 2043"))
-  distScns$Anthro2023=as.character(distScns$Anthro2023)
+  distScns$Anthro2023=as.factor(distScns$Anthro2023)
+  levels(distScns$Anthro2023) = c("low","low-med","med-high","high")
 
-  timelineLabs = unique(subset(distScns,(Year==iYr)|(Year>=2023),select=c(Year,Timeline,Anthro,Anthro2023,grp)))
+  distScns$DisturbanceScn = distScns$Anthro2023
+
+
+  timelineLabs = unique(subset(distScns,(Year==iYr)|(Year>=2023),select=c(Year,Timeline,Anthro,DisturbanceScn,grp)))
   timelineLabs = timelineLabs[order(timelineLabs$Year),]
 
   png(here::here(paste0("figs/",setName,"/distScns",batchStrip(p),".png")),
       height = 4, width = 5.51, units = "in",res=600)
-  base=ggplot(distScns,aes(x=Year,y=Anthro,col=Anthro2023,group=grp))+geom_line()+geom_point(data=timelineLabs)+
-    theme_bw()+theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8)) +
-    scale_x_continuous(name="Timeline", breaks=timelineLabs$Year, labels=timelineLabs$Timeline)+ylab("Anthropogenic Disturbance")
+  base=ggplot(distScns,aes(x=Year,y=Anthro,col=DisturbanceScn,group=grp))+geom_line()+geom_point(data=timelineLabs)+
+    theme_bw()+theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8)) + labs(color="Anthropogenic\nDisturbance\nScenario")+
+    scale_x_continuous(name="Timeline", breaks=timelineLabs$Year, labels=timelineLabs$Timeline)+ylab("Anthropogenic Disturbance")+
+    scale_color_discrete(type=rev(pal4))
   print(base)
   dev.off()
 
@@ -161,12 +166,15 @@ for(i in 1:length(pages)){
   probs$pageLabB = paste0(batchStrip(probs$pageLab),"st",probs$st,"ri",probs$ri)
   pagesB=unique(probs$pageLabB)
 
+  probs$AnthroScn=as.factor(probs$Anthro2023)
+  levels(probs$AnthroScn) = c("low","low-med","med-high","high")
+
   for(pp in pagesB){
     #p=pages[1]
     png(here::here(paste0("figs/",setName,"/bands",pp,".png")),
         height = 4, width = 7.48, units = "in",res=600)
     base=ggplot(subset(probs,pageLabB==pp),aes(x=P,y=Mean,col=CorrectStatus))+geom_point(shape="-",size=3)+
-      facet_grid(AssessmentYear~Anthro2023,labeller="label_both")+
+      facet_grid(AssessmentYear~AnthroScn,labeller="label_both")+
       theme_bw()+xlab("years of monitoring")+ylab("Estimated mean population growth rate")
     print(base)
     dev.off()
@@ -174,7 +182,7 @@ for(i in 1:length(pages)){
 
   ################
   #summarize outcome - proportion wrong
-  groupVars = c("Anthro","Anthro2023","AssessmentYear",setdiff(names(scns),c("rQ","sQ","rep","pageId","repBatch")))
+  groupVars = c("Anthro","AnthroScn","AssessmentYear",setdiff(names(scns),c("rQ","sQ","rep","pageId","repBatch")))
   probs$pageLab = batchStrip(probs$pageLab)
   probsSum <- probs %>% group_by(across(groupVars)) %>% summarize(propWrong = mean(wrong))
   probsSum <- subset(probsSum,P>0)
@@ -193,16 +201,18 @@ for(i in 1:length(pages)){
     png(here::here(paste0("figs/",setName,"/power",pp,".png")),
         height = 4, width = 7.48, units = "in",res=600)
     base=ggplot(subset(probsSum,pageLabC==pp),aes(x=P,y=1-propWrong,col=NumCollars,linetype=RenewalInterval,group=grp))+geom_line()+
-      facet_grid(AssessmentYear~Anthro2023,labeller="label_both")+
-      theme_bw()+xlab("years of monitoring")+ylab("Probability of correct status assessment")
+      facet_grid(AssessmentYear~AnthroScn,labeller="label_both")+labs(color="Number of\n Collars", type="Collar\nRenewal\nInterval")+
+      theme_bw()+xlab("years of monitoring")+ylab("Probability of correct status assessment")+
+      scale_color_discrete(type=(pal4))
     print(base)
     dev.off()
 
     png(here::here(paste0("figs/",setName,"/powerEffort",pp,".png")),
         height = 4, width = 7.48, units = "in",res=600)
     base=ggplot(subset(probsSum,pageLabC==pp),aes(x=CollarYrs,y=1-propWrong,linetype=RenewalInterval,col=NumCollars,group=grp))+geom_line()+
-      facet_grid(AssessmentYear~Anthro2023,labeller="label_both")+
-      theme_bw()+xlab("years of monitoring * NumCollars")+ylab("Probability of correct status assessment")
+      facet_grid(AssessmentYear~AnthroScn,labeller="label_both")+labs(color="Number of\n Collars", type="Collar\nRenewal\nInterval")+
+      theme_bw()+xlab("years of monitoring * NumCollars")+ylab("Probability of correct status assessment")+
+      scale_color_discrete(type=(pal4))
     print(base)
     dev.off()
 
