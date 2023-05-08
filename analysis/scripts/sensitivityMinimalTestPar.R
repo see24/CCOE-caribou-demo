@@ -19,6 +19,8 @@ future::plan("multisession")
 
 foreach(cpageId = 1:n_batches, .options.future = list(seed = TRUE)) %dofuture% {
 
+  sink(paste0("outbatch_", cpageId, ".txt"))
+
   simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
   allScns = read.csv(paste0("tabs/",setName,".csv"))
@@ -45,6 +47,7 @@ foreach(cpageId = 1:n_batches, .options.future = list(seed = TRUE)) %dofuture% {
   saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 
   message("batch ", cpageId, " complete")
+  sink()
 
 }
 future::plan("sequential")
