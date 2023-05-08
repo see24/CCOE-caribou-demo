@@ -21,7 +21,7 @@ dir.create(paste0("results/",setName),recursive=T)
 
 future::plan("multisession")
 
-foreach(cpageId = 1:n_batches, .options.future = list(seed = TRUE)) %dofuture% {
+foreach(cpageId = 1:24, .options.future = list(seed = TRUE)) %dofuture% {
 
   simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
