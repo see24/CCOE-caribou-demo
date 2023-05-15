@@ -18,7 +18,7 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   library(tidyr)
   library(dplyr)
 
-  scns<-fillDefaults(scns)
+  scns<-getScenarioDefaults(scns)
 
   eParsIn = list()
   eParsIn$cowCounts <- data.frame(Year = 1981:2023,

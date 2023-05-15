@@ -109,7 +109,7 @@ pal_nm <- "Redon"
 fig_widths <- c(min = 1.18, single = 3.543, mid = 5.51, two = 7.48)
 
 runScenarios = F 
-doPriorCalibration=F #Note the prior calibration is time consuming. 
+doPriorCalibration=T #Note the prior calibration is time consuming. 
 ```
 
 ## Caribou population monitoring: survival and recruitment metrics
@@ -126,11 +126,11 @@ Collared females are also used in traditional estimates of recruitment (refs/exa
 
 Following Eacker et al. [-@eacker_web-based_2019], the observed number of calves $\hat{C}_t$ is a binomially distributed function of the observed number of adult female caribou $\hat{W}_t$ and the estimated recruitment rate $R_t$: $$\hat{C}_t \sim \text{Binomial}(\hat{W}_t,R_t).$$
 
-We model recruitment probability as a function of anthropogenic disturbance and fire with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a a_t+\beta^R_f f_t+\epsilon^R_t; \epsilon^R_t \sim \text{Normal}(0,\sigma^2_{R}).$$ 
-Estimated recruitment probability is adjusted for sex ratio to get expected recruits per female: $\tilde{R}_t=R_t/2$. We include an option to also adjust for delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012], but to maintain consistency with Johnson et al. [-@johnson_science_2020] we do not apply this adjustment by default: $$\tilde{R}_t=\frac{R_t/2}{1+R_t/2}.$$ 
+We model recruitment probability as a function of anthropogenic disturbance and fire with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a A_t+\beta^R_f F_t+\epsilon^R_t; \epsilon^R_t \sim \text{Normal}(0,\sigma^2_{R}).$$ 
+Estimated recruitment probability is adjusted for sex ratio to get expected recruits per female: $X_t=R_t/2$. We include an option to also adjust for delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012], but to maintain consistency with Johnson et al. [-@johnson_science_2020] we do not apply this adjustment by default: $$X_t=\frac{R_t/2}{1+R_t/2}.$$ 
 
 Also following [@eacker_web-based_2019], Kaplan-Meier estimates of observed adult female survival probability $\hat{S}_t$ and associated precisions $\tau_t$ are estimated from known-fate radio collar data using the survival R package [@therneau_modeling_2000], with precisions for years with no observed mortality estimated using a separate Bayesian model. Observed estimated survival is a Gaussian distributed function of the true survival probability: $$\hat{S_t} \sim \text{Normal}(S_t,1/\tau_t).$$ 
-We model true survival probability as an adjusted function of buffered anthropogenic disturbance $a_t$ with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a a_t+\epsilon^S_t; \epsilon^S_t \sim \text{Normal}(0,\sigma^2_{S}).$$ 
+We model true survival probability as an adjusted function of buffered anthropogenic disturbance $A_t$ with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a A_t+\epsilon^S_t; \epsilon^S_t \sim \text{Normal}(0,\sigma^2_{S}).$$ 
 To assess sensitivity of results to the survival estimation method, we also implemented an alternative parametric exponential survival model, wherein the observed state (alive or dead, $\hat{I}_{i,t,m}$) of an individual animal $i$ in year $t$ and month $m$ is Bernoulli distributed (ref IPM book): $$\hat{I}_{i,t,m} \sim \text{Bernoulli}(S^{1/12}_t\hat{I}_{i,t,m-1}).$$
 
 All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table \@ref(tab:priors)). We calibrated the prior distributions so that the 95% prediction interval from the IPM matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment (Appendix A).  
@@ -143,15 +143,15 @@ knitr::kable(tbl,caption="Prior means and standard deviations of Gaussian distri
 #TO DO: indicate which of these are from Johnson, and which are calibrated.
 ```
 
-We assume a simple two-class demographic model, with a census in late winter of surviving females and new recruits to the post-juvenile (aged 1+) class. The number of post-juvenile females that survive from year $t$ to the census $A_t$ is binomially distributed with survival probability $S_t$: $A_{t} \sim \text{Binomial}(N_t,S_t)$. The number of juveniles recruiting to the post-juvenile class at the census is a Poisson distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate $\tilde{R}_t$: $J_{t} \sim \text{Poisson}(\tilde{R}_tA_t)$. The post-juvenile female population in the next year includes both survivors and new recruits: $N_{t+1}=A_t+J_t$. Annual population growth rate $\lambda_t$ is set to 0 when $N_t$ is 0, and is otherwise $\lambda_t=N_{t+1}/N_t$. For more stable estimates of population status, we report average population growth over a period of $y$ years, calculated as $\bar{\lambda}_{y,t}=\sum_{x=t-y+1}^{x=t}\lambda_x$. The initial post-juvenile population size $N_0$ is 1000 animals. For reference, all variables and parameters are defined in Table A1. 
+We assume a simple two-class demographic model, with a census in late winter of surviving females and new recruits to the post-juvenile (aged 1+) class. The number of post-juvenile females that survive from year $t$ to the census $W_t$ is binomially distributed with survival probability $S_t$: $W_{t} \sim \text{Binomial}(N_t,S_t)$. The number of juveniles recruiting to the post-juvenile class at the census is a Poisson distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate $X_t$: $J_{t} \sim \text{Poisson}(X_tW_t)$. The post-juvenile female population in the next year includes both survivors and new recruits: $N_{t+1}=W_t+J_t$. Annual population growth rate $\lambda_t$ is set to 0 when $N_t$ is 0, and is otherwise $\lambda_t=N_{t+1}/N_t$. For more stable estimates of population status, we report average population growth over a period of $y$ years, calculated as $\bar{\lambda}_{y,t}=\sum_{x=t-y+1}^{x=t}\lambda_x$. The initial post-juvenile population size $N_0$ is 1000 animals. For reference, all variables and parameters are defined in Table A1. 
 
 <!--
 Annotated equations for poster.
-$$\underbrace{N_{t+1}}_{\text{Adult females in year t+1}}=\underbrace{A_t}_{\text{Surviving adults}}+\underbrace{J_t}_{\text{New recruits to adult age class}}$$
-$$A_{t} \sim \text{Binomial}(N_t,\underbrace{S_t}_{\text{Adult survival probability}})$$
-$$S_t=\underbrace{\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})}_{\text{Adjustment as in in Johnson et al. 2020}}=\beta^S_0+ \underbrace{\beta^S_aa_t}_{\text{Anthropogenic disturbance effect}}+\underbrace{\epsilon^S_t}_{\text{Random effect of year}}.$$
-$$J_{t} \sim \text{Poisson}(A_t\underbrace{R_t/2}_{\text{Recruitment rate}})$$
-$$\log(R_t)=\beta^R_0+\underbrace{\beta^R_a a_t}_{\text{Anthropogenic disturbance effect}}+ \underbrace{\beta^R_ff_t}_{\text{Fire effect}}+\underbrace{\epsilon^R_t}_{\text{Random effect of year}}.$$
+$$\underbrace{N_{t+1}}_{\text{Adult females in year t+1}}=\underbrace{W_t}_{\text{Surviving adults}}+\underbrace{J_t}_{\text{New recruits to adult age class}}$$
+$$W_{t} \sim \text{Binomial}(N_t,\underbrace{S_t}_{\text{Adult survival probability}})$$
+$$S_t=\underbrace{\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})}_{\text{Adjustment as in in Johnson et al. 2020}}=\beta^S_0+ \underbrace{\beta^S_aA_t}_{\text{Anthropogenic disturbance effect}}+\underbrace{\epsilon^S_t}_{\text{Random effect of year}}.$$
+$$J_{t} \sim \text{Poisson}(W_t\underbrace{R_t/2}_{\text{Recruitment rate}})$$
+$$\log(R_t)=\beta^R_0+\underbrace{\beta^R_a A_t}_{\text{Anthropogenic disturbance effect}}+ \underbrace{\beta^R_fF_t}_{\text{Fire effect}}+\underbrace{\epsilon^R_t}_{\text{Random effect of year}}.$$
 $$\underbrace{\hat{C}_t}_{\text{Observed calves}} \sim \text{Binomial}(\underbrace{\hat{W}_t}_{\text{Observed cows}},R_t)$$
 $$\underbrace{\hat{S_t}}_{\text{Observed survival (Kaplan-Meier estimate)}} \sim \text{Normal}(S_t,1/\tau_t).$$ -->
 
@@ -166,7 +166,11 @@ TO DO:
 ## A method for simulating example local demographic data
 
 ### True population dynamics
-Write for now assuming that caribouMetrics paper will be published somewhere.
+To simulate plausible plausible demographic trajectories for example populations we used a national model described by Dyson et al. [-@dyson_existing_2022] and Stewart et al. [-@stewart_climate-informed_2023]. Expected recruitment ($\bar{R}_t$) and survival ($\bar{S}_t$) vary with disturbance according the beta regression models estimated by Johnson et al. [@johnson_science_2020]:  :$$\bar{R}_t~Beta(\mu^R_t,\phi^R);log(\mu^R_t)=\dot{\beta^R_0}+\dot{\beta^R_a}A_t+\dot{\beta}^R_fF_t,$$
+$$\bar{S}_t~(46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
+$\phi^R~Normal(19.862,2.229)$ and $\phi^S~Normal(63.733,8.311)$ are precisions of the Beta distributed errors [@ferrari_beta_2004]. At the beginning of a simulation for an example population, regression coefficient values are sampled from Gaussian distributions (see Table \@ref(tab:priors)) and the population is assigned to quantiles of the Beta error distributions for survival and recruitment. The population remains in these quantiles as disturbance changes over time, so there is substantial persistent variation in recruitment and survival among example among populations (example figure). There is also interannual variation in recruitment for each population, modelled using truncated beta distributions (rtrunc function [@novomestky_package_2016]): $$\dot{R}_t~$$
+
+
 
 ### Observed survival from collars
 
@@ -288,7 +292,7 @@ We should likely also have a pgph about costs of monitoring - it'll be pretty sh
 # Appendix
 ##Definitions of variables and parameters in the Bayesian integrated population model
 
-Table A1. Variables and parameters in the Bayesian integrated population model.
+Table A1. Variables and parameters in the Bayesian integrated population model and the national demographic model.
 
 |**Symbol**|**Units**|**Description**|
 |:-----|-----|:-----------|
@@ -299,24 +303,23 @@ Table A1. Variables and parameters in the Bayesian integrated population model.
 |$y$|years|Assessment period for population growth rate.|
 |$N_0$|animals|Initial adult population size.|
 |**Observed**|
-|$a_t$|%|Buffered anthropogenic disturbance.|
-|$f_t$|%|Fire disturbance.| 
+|$A_t$|%|Buffered anthropogenic disturbance.|
+|$F_t$|%|Fire disturbance.| 
 |$\hat{C}_t$|animals|Calves observed in calf:cow survey.|
 |$\hat{W}_t$|animals|Cows observed in calf:cow survey.|
 |$\hat{S}_t$|probability|Kaplan-Meier estimate of observed adult female survival.|
 |$\tau_t$||Precision of Kaplan-Meier survival estimate.|
 |$\hat{I}_{i,t,m}$|0 or 1|Indicator of whether animal $i$ is dead or alive.|
-|**Reported state**|
+|**Estimated state**|
 |$R_t$|rate|Recruitment (calves per cow).|
 |$S_t$|probability|Adult female survival.|
 |$N_t$|animals|Adult female population size.|
 |$\bar{\lambda}_{y,t}$|rate|Average population growth over $y$ years.|
-|**Other state**|
-|$\tilde{R}_t$|rate|Recruitment adjusted for sex ratio and (optionally) delayed age of first reproduction.|
-|$A_t$|animals|Surviving adult females before recruitment.|
+|$X_t$|rate|Recruitment adjusted for sex ratio and (optionally) delayed age of first reproduction.|
+|$W_t$|animals|Surviving adult females before recruitment.|
 |$J_t$|animals|New recruits to adult age class.|
 |$\lambda_t$|rate|Annual population growth.|
-|**Parameters**|
+|**Estimated Parameters**|
 |$\beta^R_0$||Recruitment intercept.|
 |$\beta^R_a$||Anthropogenic disturbance slope for recruitment.|
 |$\beta^R_f$||Fire slope for recruitment.|
@@ -363,12 +366,12 @@ knitr::include_graphics(here::here("figs/PriorKSDists.png"))
 
 ```{r PriorAllFits, fig.cap="Differences between posterior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming minimal monitoring (1 years of 1 collar per year) of populations from the 50% quantile of the national model. In these examples, the standard deviation the random effect prior (ssv: $\\sigma^2_S$ in Table @ref(tab:priors)) is 0.03, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
 # COMMENTED OUT FOR NOW CAUSE I DIDN"T HAVE ACCESS
-#knitr::include_graphics(here::here("figs/SurvsQStarts1ssv0.03.png"))
+knitr::include_graphics(here::here("figs/SurvsQStarts1ssv0.03.png"))
 ```
 
 ```{r PriorLowFits, fig.cap="Posterior predictive survival distributions from the Bayesian model ('local') assuming intensive monitoring (15 years of 45 collars per year) of populations from the 2.5% quantile of the national model. In these examples, the standard deviation the random effect prior (ssv: $\\sigma^2_S$ in Table @ref(tab:priors)) is 0.03, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals, black dots show true survival rates from the simulated population, and open triangles show observed survival rates.", cache=TRUE}
 # COMMENTED OUT FOR NOW CAUSE I DIDN"T HAVE ACCESS
-#knitr::include_graphics(here::here("figs/SurvsQStarts45lowssv0.03.png"))
+knitr::include_graphics(here::here("figs/SurvsQStarts45lowssv0.03.png"))
 ```
 
 ```{r PriorAllFitsAnthro90, fig.cap="Differences between posterior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming minimal monitoring (1 years of 1 collar per year) of populations from the 50% quantile of the national model. In these examples, anthropogenic disturbance is 90%. When the multiplier on the prior standard deviation of the survival slope (bse: $\\beta^S_a$ in Table @ref(tab:priors)) is 3, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}

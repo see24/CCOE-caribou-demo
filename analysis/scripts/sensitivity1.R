@@ -19,25 +19,27 @@
 #TO DO: adjust method so all
 
 setName = "s4"
-monitoringScns = expand.grid(P=c(1,2,4,8,16,24),st=c(1,15,30,60),cmult=c(3,6,9),ri=c(1,4),assessmentYrs=c(3))
-stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),aS=c(0,1,1,1,0,0,0,0),aSf=c(1,1,1,1,0,0,0,0))
+monitoringScns = expand.grid(obsYears=c(1,2,4,8,16,24),collarCount=c(1,15,30,60),cowMult=c(3,6,9),collarInterval=c(1,4),assessmentYrs=c(3))
+stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),obsAnthroSlope=c(0,1,1,1,0,0,0,0),projAnthroSlope=c(1,1,1,1,0,0,0,0))
 stateScns = merge(stateScns,data.frame(rep=seq(1:200)))
 
-stateScns$sQ=runif(nrow(stateScns),min=0.01,max=0.99)
-stateScns$rQ = runif(nrow(stateScns),min=0.01,max=0.99)
+stateScns$sQuantile=runif(nrow(stateScns),min=0.01,max=0.99)
+stateScns$rQuantile = runif(nrow(stateScns),min=0.01,max=0.99)
 #monitoringScns=rbind(monitoringScns,minimalScn)
 scns=merge(monitoringScns,stateScns)
 
-scns$iA = scns$tA-(scns$P-1)*scns$aS
-unique(scns$iA)
+scns$iAnthro = scns$tA-(scns$obsYears-1)*scns$obsAnthroSlope
+scns$projYears = 20
+unique(scns$iAnthro)
 scns$repBatch = ceiling(scns$rep/50)
 table(scns$repBatch)
 scns$N0 = 1000
 nrow(scns)/6
 #scns=scns[10,]
 #scResults = readRDS("temp.Rds")
+head(scns)
 
-scns$pageLab = paste0("cmult",scns$cmult,"ay",scns$assessmentYrs,"aSf",scns$aSf,"repBatch",scns$repBatch)
+scns$pageLab = paste0("cmult",scns$cowMult,"ay",scns$assessmentYrs,"aSf",scns$projAnthroSlope,"repBatch",scns$repBatch)
 scns$pageId = as.numeric(as.factor(scns$pageLab))
 unique(scns$pageId)
 

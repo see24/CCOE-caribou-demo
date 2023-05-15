@@ -34,7 +34,7 @@ foreach(cpageId = 1:n_batches, .options.future = list(seed = TRUE)) %dofuture% {
                                          numStarts = 30)
   eParsIn$collarOnTime=1
   eParsIn$collarOffTime=12
-  eParsIn$collarNumYears=3
+  eParsIn$collarNumYears=6
 
   scns = subset(allScns, pageId==cpageId)
 
