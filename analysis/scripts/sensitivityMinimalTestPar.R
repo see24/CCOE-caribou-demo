@@ -3,12 +3,12 @@
 
 # Run batches from Rscript that uses parallel backend and new caribouMetrics functions
 n_batches <- 24
-n_scns <- 4
+n_scns <- "all"
 
 library(doFuture)
 library(caribouMetrics)
 
-setName = "s4"
+setName = "s5"
 
 #######################
 dir.create(paste0("figs/",setName),recursive=T)

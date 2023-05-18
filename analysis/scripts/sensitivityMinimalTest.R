@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
-n_reps <- 3
+#nohup Rscript --vanilla "analysis/scripts/sensitivityMinimalTest.R" 1 &
+n_reps <- "all"
 
 # Run batches from Rscript that uses parallel backend and new caribouMetrics functions
 cpageId <- commandArgs(trailingOnly = TRUE)
@@ -7,7 +8,7 @@ cpageId <- commandArgs(trailingOnly = TRUE)
 
 library(caribouMetrics)
 
-setName = "s4"
+setName = "s5"
 
 #######################
 dir.create(paste0("figs/",setName),recursive=T)
@@ -32,10 +33,13 @@ eParsIn$collarNumYears=6
 
 scns = subset(allScns, pageId==cpageId)
 
-nrow(subset(scns,rep<=n_reps))
 message("batch ", cpageId, " started")
 
-scResults = caribouMetrics:::runScnSet(subset(scns,rep<=n_reps),eParsIn,simBig,getKSDists=F,printProgress=F)
+if(n_reps=="all"){
+  scResults = caribouMetrics:::runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
+}else{
+  scResults = caribouMetrics:::runScnSet(subset(scns,rep<=n_reps),eParsIn,simBig,getKSDists=F,printProgress=F)
+}
 
 saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 

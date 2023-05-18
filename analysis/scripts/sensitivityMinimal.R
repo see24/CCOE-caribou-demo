@@ -3,7 +3,7 @@
 # Run batches from Rscript that uses parallel backend and new caribouMetrics functions
 cpageId <- commandArgs(trailingOnly = TRUE)
 # cpageId <- 1
-
+#setwd("C:/Users/HughesJo/Documents/gitprojects/Caribou-Demographic-Projection-Paper")
 library(caribouMetrics)
 
 setName = "s4"
@@ -27,7 +27,7 @@ eParsIn$freqStartsByYear <- data.frame(Year = 1981:2023,
                                        numStarts = 30)
 eParsIn$collarOnTime=1
 eParsIn$collarOffTime=12
-eParsIn$collarNumYears=3
+eParsIn$collarNumYears=6
 
 scns = subset(allScns, pageId==cpageId)
 
@@ -35,7 +35,7 @@ rm(allScns)
 
 message("batch ", cpageId, " started")
 
-scResults = caribouMetrics:::runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
+scResults = runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
 
 saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 

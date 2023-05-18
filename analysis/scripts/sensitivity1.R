@@ -16,10 +16,10 @@
 #monitoringScns = expand.grid(P=c(1,4,8,16),st=c(30,60),cmult=c(3),ri=c(1,2,4),assessmentYrs=1)
 #stateScns = expand.grid(iA=c(0),rep=seq(1:30))
 
-#TO DO: adjust method so all
-
-setName = "s4"
+setName = "s5"
 monitoringScns = expand.grid(obsYears=c(1,2,4,8,16,24),collarCount=c(1,15,30,60),cowMult=c(3,6,9),collarInterval=c(1,4),assessmentYrs=c(3))
+#TO DO - in next iteration, remove multiple years of one collar
+monitoringScns = subset(monitoringScns, !((obsYears>1)&(collarCount==1))&!((collarCount==1)&(cowMult>3))&!((collarCount==1)&(collarInterval>1)))
 stateScns = data.frame(tA=c(0,20,40,60,0,20,40,60),obsAnthroSlope=c(0,1,1,1,0,0,0,0),projAnthroSlope=c(1,1,1,1,0,0,0,0))
 stateScns = merge(stateScns,data.frame(rep=seq(1:200)))
 
@@ -34,7 +34,6 @@ unique(scns$iAnthro)
 scns$repBatch = ceiling(scns$rep/50)
 table(scns$repBatch)
 scns$N0 = 1000
-nrow(scns)/6
 #scns=scns[10,]
 #scResults = readRDS("temp.Rds")
 head(scns)
@@ -43,8 +42,6 @@ scns$pageLab = paste0("cmult",scns$cowMult,"ay",scns$assessmentYrs,"aSf",scns$pr
 scns$pageId = as.numeric(as.factor(scns$pageLab))
 unique(scns$pageId)
 
+nrow(scns)
 write.csv(scns,paste0("tabs/",setName,".csv"),row.names=F)
 pages=unique(scns$pageLab)
-
-#DO - set up wrapper functions to work with tables of disturbance and monitoring scenarios.
-#DO - figure out how to run on cloud.

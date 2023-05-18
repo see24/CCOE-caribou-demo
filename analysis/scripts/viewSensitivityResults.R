@@ -57,6 +57,7 @@ for(i in 1:length(pages)){
   }else{
     scResults = readRDS(paste0("results/",setName,"/rTest",cpageId,".Rds"))
   }
+  scResults$errorLog
 
   if(as.numeric(strsplit(nextP,"repBatch")[[1]][2])<=as.numeric(strsplit(p,"repBatch")[[1]][2])){
     combine=F
