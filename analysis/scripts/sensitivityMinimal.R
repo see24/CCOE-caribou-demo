@@ -35,7 +35,7 @@ rm(allScns)
 
 message("batch ", cpageId, " started")
 
-scResults = runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
+scResults = caribouMetrics:::runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
 
 saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 
