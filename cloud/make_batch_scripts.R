@@ -10,3 +10,14 @@ make_files <- function(batch){
 }
 
 purrr::walk(1:24, make_files)
+
+
+make_task <- function(batch){
+  batch <- as.character(batch)
+  # need this to make it have unix line endings
+  outfile <-  file(paste0("cloud/caribouDemo", batch, ".json"), "wb")
+  readLines("cloud/caribouDemo.json") |> stringr::str_replace_all("<batch>", batch)|>
+    writeLines(con = outfile)
+  close(outfile)
+}
+purrr::walk(1:24, make_task)
