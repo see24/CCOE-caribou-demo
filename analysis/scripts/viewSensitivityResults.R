@@ -11,7 +11,7 @@ scn_defaults <- eval(formals(getScenarioDefaults))
 
 ########################
 #sensitivity
-setName = "s4"
+setName = "s5"
 dir.create(paste0("figs/",setName),recursive=T)
 scns = read.csv(here::here("tabs/s4.csv"))
 scns = subset(scns,cmult!=0)
@@ -38,12 +38,14 @@ for(i in 1:length(pages)){
   cpageId=pages[i]
 
   if(i==length(pages)){
-    nextP = "Batch1"
+    nextP = "TrepBatch1"
   }else{
     nextP = unique(scns$pageLab[scns$pageId==pages[i+1]])
   }
 
   p = unique(scns$pageLab[scns$pageId==cpageId])
+
+  print(paste(i,p))
 
   if(combine&(cpageId>1)){
     scNew = readRDS(paste0("results/",setName,"/rTest",cpageId,".Rds"))
@@ -57,16 +59,12 @@ for(i in 1:length(pages)){
   }else{
     scResults = readRDS(paste0("results/",setName,"/rTest",cpageId,".Rds"))
   }
-  scResults$errorLog
 
   if(as.numeric(strsplit(nextP,"repBatch")[[1]][2])<=as.numeric(strsplit(p,"repBatch")[[1]][2])){
     combine=F
   }else{combine=T;next}
 
-  print(paste(i,p))
-
   #figure out how to count out errors.
-
   head(scResults$rr.summary.all)
   unique(scResults$rr.summary.all$collarInterval)
   #show examples projections
@@ -104,9 +102,6 @@ for(i in 1:length(pages)){
   probs$projectionTime = probs$Year-2023
   probs$Anthro2023 = pmax(0,probs$tA)#pmax(0,probs$tA-2) #correcting for error - change back in round 4
   probs$AssessmentYear = probs$Year
-
-  #Error in 24 yr monitoring anthro 20 result - remove for now
-  #probs=subset(probs,!((Anthro2023==18)&(P==24)))
 
   names(probs)
 
@@ -162,21 +157,23 @@ for(i in 1:length(pages)){
   probs = merge(probs,statusTrue)
   probs = merge(probs,sizeTrue)
   probs = merge(probs,sizeProj)
-  probs$P[probs$st==1]=0
+
+  head(probs)
+  probs$obsYears[probs$collarCount==1]=0
   probs$viableTrue = (probs$trueMean>0.99)&(probs$trueSize>10)
 
   probs$wrong = ((probs$Mean<=0.99)|(probs$projSize<=10))&probs$viableTrue
   probs$CorrectStatus[probs$wrong]="no"
   probs$CorrectStatus[!probs$wrong]="yes"
 
-  probs$pageLabB = paste0(batchStrip(probs$pageLab),"st",probs$st,"ri",probs$ri)
+  probs$pageLabB = paste0(batchStrip(probs$pageLab),"st",probs$collarCount,"ri",probs$collarInterval)
   pagesB=unique(probs$pageLabB)
 
   probs$AnthroScn=as.factor(probs$Anthro2023)
   levels(probs$AnthroScn) = c("low","low-med","med-high","high")
 
   for(pp in pagesB){
-    #p=pages[1]
+    #pp=pagesB[1]
     png(here::here(paste0("figs/",setName,"/bands",pp,".png")),
         height = 4, width = 7.48, units = "in",res=600)
     base=ggplot(subset(probs,pageLabB==pp),aes(x=obsYears,y=Mean,col=CorrectStatus))+geom_point(shape="-",size=3)+
