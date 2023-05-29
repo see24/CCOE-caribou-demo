@@ -1,6 +1,6 @@
 {
     "properties": {
-        "vmSize": "Standard_F8s_v2",
+        "vmSize": "Standard_DS2_v3",
         "deploymentConfiguration": {
             "virtualMachineConfiguration": {
 				"imageReference": {
@@ -27,7 +27,7 @@
             }
         },
 		"networkConfiguration": {
-			"subnetId":"<subnetID>"
+			"subnetId":"<subnetId>"
 		}
     }
 }
