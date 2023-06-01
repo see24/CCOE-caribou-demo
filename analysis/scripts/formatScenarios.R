@@ -1,14 +1,14 @@
 
 library(caribouMetrics)
 
-rawScns<-read.csv(here::here("tabs/s2.csv"))
+rawScns<-read.csv(here::here("tabs/s5.csv"))
 nrow(rawScns)
-rawScns = subset(rawScns,st!=1)
+rawScns = subset(rawScns,collarCount!=1)
 
-monitoringPars = list(P=list(description = "monitoring duration",unit="years"),
-                      st=list(description="target # of collars", unit="cows"),
-                      cmult=list(description="calf:cow survey multiplier",unit = "cows per collared cow"),
-                      ri = list(description="time between collar deployments", unit="years"),
+monitoringPars = list(obsYears=list(description = "monitoring duration",unit="years"),
+                      collarCount=list(description="target # of collars", unit="cows"),
+                      cowMult=list(description="calf:cow survey multiplier",unit = "cows per collared cow"),
+                      collarInterval = list(description="time between collar deployments", unit="years"),
                       assessmentYrs = list(description="assessment duration",unit="years"))
 
 start=T

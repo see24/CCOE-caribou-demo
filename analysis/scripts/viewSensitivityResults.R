@@ -7,6 +7,8 @@ library(RColorBrewer)
 pal2 = brewer.pal(7,"RdBu")[c(2,6)]
 pal4 = brewer.pal(5,"RdBu")[c(1,2,4,5)]
 
+pal4b = brewer.pal(5,"Purples")[c(2,3,4,5)]
+
 scn_defaults <- eval(formals(getScenarioDefaults))
 
 ########################
@@ -135,7 +137,7 @@ for(i in 1:length(pages)){
   base=ggplot(distScns,aes(x=Year,y=Anthro,col=DisturbanceScn,group=grp))+geom_line()+geom_point(data=timelineLabs)+
     theme_bw()+theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8)) + labs(color="Anthropogenic\nDisturbance\nScenario")+
     scale_x_continuous(name="Timeline", breaks=timelineLabs$Year, labels=timelineLabs$Timeline)+ylab("Anthropogenic Disturbance")+
-    scale_color_discrete(type=rev(pal4))
+    scale_color_discrete(type=(pal4b))
   print(base)
   dev.off()
 

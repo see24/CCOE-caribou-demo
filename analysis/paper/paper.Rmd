@@ -124,7 +124,7 @@ Collared females are also used in traditional estimates of recruitment (refs/exa
 
 ## Integration of local demographic data and national disturbance-demographic relationships in Bayesian population model
 
-Following Eacker et al. [-@eacker_web-based_2019], the observed number of calves $\hat{C}_t$ is a binomially distributed function of the observed number of adult female caribou $\hat{W}_t$ and the estimated recruitment rate $R_t$: $$\hat{C}_t \sim \text{Binomial}(\hat{W}_t,R_t).$$
+Following Eacker et al. [-@eacker_web-based_2019], the observed number of calves $\hat{J}_t$ is a binomially distributed function of the observed number of adult female caribou $\hat{W}_t$ and the estimated recruitment rate $R_t$: $$\hat{J}_t \sim \text{Binomial}(\hat{W}_t,R_t).$$
 
 We model recruitment probability as a function of anthropogenic disturbance and fire with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a A_t+\beta^R_f F_t+\epsilon^R_t; \epsilon^R_t \sim \text{Normal}(0,\sigma^2_{R}).$$ 
 Estimated recruitment probability is adjusted for sex ratio to get expected recruits per female: $X_t=R_t/2$. We include an option to also adjust for delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012], but to maintain consistency with Johnson et al. [-@johnson_science_2020] we do not apply this adjustment by default: $$X_t=\frac{R_t/2}{1+R_t/2}.$$ 
@@ -145,6 +145,7 @@ knitr::kable(tbl,caption="Prior means and standard deviations of Gaussian distri
 
 We assume a simple two-class demographic model, with a census in late winter of surviving females and new recruits to the post-juvenile (aged 1+) class. The number of post-juvenile females that survive from year $t$ to the census $W_t$ is binomially distributed with survival probability $S_t$: $W_{t} \sim \text{Binomial}(N_t,S_t)$. The number of juveniles recruiting to the post-juvenile class at the census is a Poisson distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate $X_t$: $J_{t} \sim \text{Poisson}(X_tW_t)$. The post-juvenile female population in the next year includes both survivors and new recruits: $N_{t+1}=W_t+J_t$. Annual population growth rate $\lambda_t$ is set to 0 when $N_t$ is 0, and is otherwise $\lambda_t=N_{t+1}/N_t$. For more stable estimates of population status, we report average population growth over a period of $y$ years, calculated as $\bar{\lambda}_{y,t}=\sum_{x=t-y+1}^{x=t}\lambda_x$. The initial post-juvenile population size $N_0$ is 1000 animals. For reference, all variables and parameters are defined in Table A1. 
 
+$$J_{t} \sim \text{Poisson}(W_tR_t/2)$$
 <!--
 Annotated equations for poster.
 $$\underbrace{N_{t+1}}_{\text{Adult females in year t+1}}=\underbrace{W_t}_{\text{Surviving adults}}+\underbrace{J_t}_{\text{New recruits to adult age class}}$$
@@ -165,12 +166,12 @@ TO DO:
 
 ## A method for simulating example local demographic data
 
-### True population dynamics
-To simulate plausible plausible demographic trajectories for example populations we used a national model described by Dyson et al. [-@dyson_existing_2022] and Stewart et al. [-@stewart_climate-informed_2023]. Expected recruitment ($\bar{R}_t$) and survival ($\bar{S}_t$) vary with disturbance according the beta regression models estimated by Johnson et al. [@johnson_science_2020]:  :$$\bar{R}_t~Beta(\mu^R_t,\phi^R);log(\mu^R_t)=\dot{\beta^R_0}+\dot{\beta^R_a}A_t+\dot{\beta}^R_fF_t,$$
-$$\bar{S}_t~(46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
-$\phi^R~Normal(19.862,2.229)$ and $\phi^S~Normal(63.733,8.311)$ are precisions of the Beta distributed errors [@ferrari_beta_2004]. At the beginning of a simulation for an example population, regression coefficient values are sampled from Gaussian distributions (see Table \@ref(tab:priors)) and the population is assigned to quantiles of the Beta error distributions for survival and recruitment. The population remains in these quantiles as disturbance changes over time, so there is substantial persistent variation in recruitment and survival among example among populations (example figure). There is also interannual variation in recruitment for each population, modelled using truncated beta distributions (rtrunc function [@novomestky_package_2016]): $$\dot{R}_t~$$
+### Population dynamics
+To simulate plausible plausible demographic trajectories for example populations we used the slightly modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. As in the IPM, maximum potential recruitment rate is adjusted for sex ratio and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{\dot{R}_t/2}{1+\dot{R}_t/2}.$$ Realized recruitment rate varies with population density [@lacy_vortex_2017], and the number of juveniles recruiting to the post-juvenile class at the census is a binomially distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate: $$\dot{J}_{t} \sim \text{Binomial}(\dot{W}_t,\dot{X}_t[p_0-(p_0-p_k)(\frac{\dot{W}_t}{N_0k})^b]\frac{\dot{W}_t}{\dot{W}_t+a}).$$ Given parameters in Table X, recruitment rate is lowest $(0.5\dot{X}_t)$ when $\dot{N}_t=1$, approaches a maximum of $\dot{X}_t$ at intermediate population sizes, and declines to $0.6\dot{X}_t$ as the population reaches carrying capacity of $k=100$ times the initial population size. The post-juvenile female population in the next year includes both survivors and new recruits: $\dot{N}_{t+1}=\text{min}(\dot{W}_t+\dot{J}_t,r_{max}\dot{N}_t)$.
 
-
+Interannual variation in survival and recruitment is modelled using truncated beta distributions [rtrunc function; @novomestky_package_2016]: $\dot{R}_t \sim \text{TruncatedBeta}(\bar{R}_t,\nu_R,l_R,h_R); \dot{S}_t \sim \text{TruncatedBeta}(\bar{S}_t,\nu_S,l_S,h_S)$. Coefficients of variation among years $(\nu_R,\nu_S)$ and maximum/minimum values $l_R,h_R,l_S,h_S$ for recruitment and survival are given in Table X. Expected recruitment ($\bar{R}_t$) and survival ($\bar{S}_t$) vary with disturbance according the beta regression models estimated by Johnson et al. [@johnson_science_2020]: $$ \bar{R}_t \sim Beta(\mu^R_t,\phi^R);log(\mu^R_t)=\dot{\beta^R_0}+\dot{\beta^R_a}A_t+\dot{\beta}^R_fF_t,$$
+$$\bar{S}_t \sim (46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
+$\phi^R \sim \text{Normal}(19.862,2.229)$ and $\phi^S \sim \text{Normal}(63.733,8.311)$ are precisions of the Beta distributed errors [@ferrari_beta_2004]. At the beginning of a simulation for an example population, regression coefficient values are sampled from Gaussian distributions (see Table \@ref(tab:priors)) and the population is assigned to quantiles of the Beta error distributions for survival and recruitment. The population remains in these quantiles as disturbance changes over time, so there is substantial persistent variation in recruitment and survival among example among populations (example figure). 
 
 ### Observed survival from collars
 
@@ -327,6 +328,31 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 |$\beta^S_0$||Survival intercept.|
 |$\beta^S_a$||Anthropogenic disturbance slope for survival.|
 |$\sigma^2_{S}$||Variance in random effect of year on survival.|
+|**True state**|
+|$\dot{R}_t$|rate|Recruitment (calves per cow).|
+|$\dot{S}_t$|probability|Adult female survival.|
+|$\dot{N}_t$|animals|Adult female population size.|
+|$\dot{X}_t$|rate|Recruitment adjusted for sex ratio and (optionally) delayed age of first reproduction.|
+|$\dot{W}_t$|animals|Surviving adult females before recruitment.|
+|$\dot{J}_t$|animals|New recruits to adult age class.|
+|**True parameters**|
+|$\dot{\beta}^R_0$||Recruitment intercept.|
+|$\dot{\beta}^R_a$||Anthropogenic disturbance slope for recruitment.|
+|$\dot{\beta}^R_f$||Fire slope for recruitment.|
+|$\dot{\beta}^S_0$||Survival intercept.|
+|$\dot{\beta}^S_a$||Anthropogenic disturbance slope for survival.|
+|$p_0=1$||Maximum recruitment multiplier.|
+|$p_k=0.6$||Recruitment multiplier at carrying capacity.|
+|$k=100$||Carrying capacity multiplier.|
+|$b=4$||Density dependence shape parameter.|
+|$a=1$||Allee effect parameter.|
+|$r_{max}=1.3$||Maximum population growth rate.|
+|$\nu_R=0.46$||Coefficient of variation in $\dot{R}_t$ among years.|
+|$\nu_S=0.08696$||Coefficient of variation in $\dot{S}_t$ among years.|
+|$l_R=0$||Minimum value for $\dot{R}_t$.|
+|$l_S=0$||Minimum value for $\dot{S}_t$.|
+|$h_R=0$||Maximum value for $\dot{R}_t$.|
+|$h_S=0$||Maximum value for $\dot{S}_t$.|
 
 ## Calibration of Priors
 
