@@ -1,6 +1,6 @@
 {
-    "id": "caribou-demog_sens_batch",
-    "commandLine": "bash run_caribou.sh",
+    "id": "caribou-demog_sens_batch<batch>",
+    "commandLine": "bash run_caribou<batch>.sh",
 	"outputFiles": [{
 		"destination": {
 			"container": {
