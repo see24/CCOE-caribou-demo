@@ -167,7 +167,10 @@ TO DO:
 ## A method for simulating example local demographic data
 
 ### Population dynamics
-To simulate plausible plausible demographic trajectories for example populations we used the slightly modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. As in the IPM, maximum potential recruitment rate is adjusted for sex ratio and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{\dot{R}_t/2}{1+\dot{R}_t/2}.$$ Realized recruitment rate varies with population density [@lacy_vortex_2017], and the number of juveniles recruiting to the post-juvenile class at the census is a binomially distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate: $$\dot{J}_{t} \sim \text{Binomial}(\dot{W}_t,\dot{X}_t[p_0-(p_0-p_k)(\frac{\dot{W}_t}{N_0k})^b]\frac{\dot{W}_t}{\dot{W}_t+a}).$$ Given parameters in Table X, recruitment rate is lowest $(0.5\dot{X}_t)$ when $\dot{N}_t=1$, approaches a maximum of $\dot{X}_t$ at intermediate population sizes, and declines to $0.6\dot{X}_t$ as the population reaches carrying capacity of $k=100$ times the initial population size. The post-juvenile female population in the next year includes both survivors and new recruits: $\dot{N}_{t+1}=\text{min}(\dot{W}_t+\dot{J}_t,r_{max}\dot{N}_t)$.
+To simulate plausible plausible demographic trajectories for example populations we used the slightly modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. As in the IPM, maximum potential recruitment rate is adjusted for sex ratio, misidentification biases (Appendix X) and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{c\dot{R}_t/2}{1+c\dot{R}_t/2};c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}, $$
+where $w$ is a multiplier that defines the apparent number of adult females in the composition survey as a function of the number of collared animals, $q$ the ratio of young bulls to adult females, $u$ is the probability of misidentifying young bulls as adult females and vice versa, and $z$ is the probability of missing a calf.
+ 
+Realized recruitment rate varies with population density [@lacy_vortex_2017], and the number of juveniles recruiting to the post-juvenile class at the census is a binomially distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate: $$\dot{J}_{t} \sim \text{Binomial}(\dot{W}_t,\dot{X}_t[p_0-(p_0-p_k)(\frac{\dot{W}_t}{N_0k})^b]\frac{\dot{W}_t}{\dot{W}_t+a}).$$ Given parameters in Table X, recruitment rate is lowest $(0.5\dot{X}_t)$ when $\dot{N}_t=1$, approaches a maximum of $\dot{X}_t$ at intermediate population sizes, and declines to $0.6\dot{X}_t$ as the population reaches carrying capacity of $k=100$ times the initial population size. The post-juvenile female population in the next year includes both survivors and new recruits: $\dot{N}_{t+1}=\text{min}(\dot{W}_t+\dot{J}_t,r_{max}\dot{N}_t)$.
 
 Interannual variation in survival and recruitment is modelled using truncated beta distributions [rtrunc function; @novomestky_package_2016]: $\dot{R}_t \sim \text{TruncatedBeta}(\bar{R}_t,\nu_R,l_R,h_R); \dot{S}_t \sim \text{TruncatedBeta}(\bar{S}_t,\nu_S,l_S,h_S)$. Coefficients of variation among years $(\nu_R,\nu_S)$ and maximum/minimum values $l_R,h_R,l_S,h_S$ for recruitment and survival are given in Table X. Expected recruitment ($\bar{R}_t$) and survival ($\bar{S}_t$) vary with disturbance according the beta regression models estimated by Johnson et al. [@johnson_science_2020]: $$ \bar{R}_t \sim Beta(\mu^R_t,\phi^R);log(\mu^R_t)=\dot{\beta^R_0}+\dot{\beta^R_a}A_t+\dot{\beta}^R_fF_t,$$
 $$\bar{S}_t \sim (46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
@@ -306,7 +309,7 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 |**Observed**|
 |$A_t$|%|Buffered anthropogenic disturbance.|
 |$F_t$|%|Fire disturbance.| 
-|$\hat{C}_t$|animals|Calves observed in calf:cow survey.|
+|$\hat{J}_t$|animals|Calves observed in calf:cow survey.|
 |$\hat{W}_t$|animals|Cows observed in calf:cow survey.|
 |$\hat{S}_t$|probability|Kaplan-Meier estimate of observed adult female survival.|
 |$\tau_t$||Precision of Kaplan-Meier survival estimate.|
@@ -353,6 +356,58 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 |$l_S=0$||Minimum value for $\dot{S}_t$.|
 |$h_R=0$||Maximum value for $\dot{R}_t$.|
 |$h_S=0$||Maximum value for $\dot{S}_t$.|
+
+## Model of bias in recruitment estimates from calf:cow surveys
+
+TO DO: get photo of calf:cow survey group. Label classes of animals to illustrate meaning of T, U, V, W, O, P, J, K.
+
+We assume each group of animals in a calf:cow survey contains one or more collared adult females ($T$), and may also include: uncollared adult females misidentified as young bulls ($U$); correctly identified uncollared adult females ($V$); correctly identified young bulls ($O$); young bulls misidentified as uncollared adult females ($P$); observed calves ($J$); and unobserved calves ($K$). The apparent number of adult females in the group is $T+V+P=Tw$, where $w$ is a multiplier that defines the apparent number of adult females as a function of the number of collared animals. The ratio of young bulls to uncollared adult females in the group is:
+$$q = \frac{P+O}{U+V}.$$
+Assuming an equal probability $u$ of misidentifying young bulls as adult females and vice versa, we get $V=(U+V)(1-u)$ and $P=(O+P)u$. Given a probability $z$ of missing calves, we get $J=(J+K)(1-z)$.
+
+Our objective is to model the sex and bias-corrected recruitment rate $X=\frac{J+K}{2(T+U+V)}$ as a function of the observed calf:cow ratio $R=J/(T+V+P)$, the cow multiplier $w$, the ratio of young bulls to adult females $q$, and the misidentification probabilities $u$ and $z$. We start by solving for $T+U+V$ as a function of $q,w,u$ and $T$. Recognize that $P=Tw-T-V$, $U+V=V/(1-u)$, and $P+O=P/u$ to write $q$ as 
+$$q=\frac{Tw-T-V}{uV/(1-u)}.$$
+Rearrange to get 
+$$V=\frac{T(w-1)(1-u)}{qu+1-u}.$$
+Recognize that $U=Vu/(1-u)$ to write $T+U+V$ as a function of $q,w,u$ and $T$: 
+$$T+U+V=T\frac{qu+w-u}{qu+1-u}.$$
+Recognize that the number of observed calves $J$ is the product of the apparent recruitment rate and the apparent number of adult females $J=RTw$, and that therefore $J+K=RTw/(1-z)$ to rewrite the bias corrected recruitment rate $X=\frac{J+K}{2(T+U+V)}$ as a function of $w,u,z$ and $R$:
+$$X=R\frac{w(1+qu-u)}{2(w+qu-u)(1-z)}.$$
+For simplicity, we write $X$ as a function of a bias correction term $c$: 
+$$c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}; X=cR/2$$
+
+If we also choose to adjust for delayed age at first reproduction (), the adjusted recruitment rate becomes $$X=\frac{cR/2}{1+cR/2}.$$
+
+```{r biasPlot, fig.cap="Variation in the sex and bias corrected recruitment rate $X$ with the cow multiplier $w$, the ratio of young bulls to adult females $q$, and the adult misidentification probability $u$, and the probability of missing a calf $z$. If only collared females are counted ($w=1$) and there is a risk of missing calves $z>0$ then the apparent recruitment rate $R$ will be lower than $X$ (first column). When uncollared animals are counted ($w>1$), the risk of misidentifying adults $u$ inflates the apparent recruitment rate $R$ as on average more cows are misidentified as bulls than vice versa, but this effect is smaller than the effect of missing calves $z$. Increasing the proportion of bulls in the group $q$ reduces the effect of adult misidentification $u$.", cache=TRUE}
+library(ggplot2)
+#Notes
+#q: assume more females than males in calf:cow group, so q<1
+
+p=expand.grid(delay=c(T,F),q=c(0,0.3,0.6),w=c(1,3,6),
+              u=c(0,0.1,0.2),z=seq(0,0.2,length.out=3),R=seq(0.15,0.6,length.out=10))
+
+getX<-function(R,delay,q,w,u,z){
+  X = 0.5*R*w*(q*u+1-u)/((q*u+w-u)*(1-z))
+  X=X*(1-delay)+delay*X/(1+X)
+  return(X)
+}
+
+p$X = getX(p$R,p$delay,p$q,p$w,p$u,p$z)
+
+p$grp = paste(p$u,p$z)
+p$u=as.factor(p$u)
+p$z=as.factor(p$z)
+
+base = ggplot(subset(p,!delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
+  geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()+ylab("2X/R=c, without delayed reproduction")
+plot(base)
+
+base2 = ggplot(subset(p,delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
+  geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()+ylab("2X/R, with delayed reproduction")
+plot(base2)
+
+```
+
 
 ## Calibration of Priors
 
