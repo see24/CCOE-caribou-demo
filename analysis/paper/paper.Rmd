@@ -122,12 +122,14 @@ mortality signal when no longer active after a predetermined period of time; mal
 Collared females are also used in traditional estimates of recruitment (refs/examples): collared individuals are located by aircraft and then the entire group of caribou is surveyed to estimate the ratio of cows:calves in the group... Because this estimate is based on more than just the collared sample of cows, the sample size for recruitment ests is typically larger than for survival (introduce the multiplier parameter).
 
 
-## Integration of local demographic data and national disturbance-demographic relationships in Bayesian population model
+## Integration of local demographic data and national disturbance-demographic relationships in a Bayesian population model
 
 Following Eacker et al. [-@eacker_web-based_2019], the observed number of calves $\hat{J}_t$ is a binomially distributed function of the observed number of adult female caribou $\hat{W}_t$ and the estimated recruitment rate $R_t$: $$\hat{J}_t \sim \text{Binomial}(\hat{W}_t,R_t).$$
 
 We model recruitment probability as a function of anthropogenic disturbance and fire with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a A_t+\beta^R_f F_t+\epsilon^R_t; \epsilon^R_t \sim \text{Normal}(0,\sigma^2_{R}).$$ 
-Estimated recruitment probability is adjusted for sex ratio to get expected recruits per female: $X_t=R_t/2$. We include an option to also adjust for delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012], but to maintain consistency with Johnson et al. [-@johnson_science_2020] we do not apply this adjustment by default: $$X_t=\frac{R_t/2}{1+R_t/2}.$$ 
+Estimated recruitment probability is adjusted for sex ratio and delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012] to get expected recruits per female:
+$$X_t=\frac{R_t/2}{1+R_t/2}.$$
+To maintain consistency with Johnson et al. [-@johnson_science_2020] also provide an option to only adjust for sex ratio $X_t=R_t/2$.
 
 Also following [@eacker_web-based_2019], Kaplan-Meier estimates of observed adult female survival probability $\hat{S}_t$ and associated precisions $\tau_t$ are estimated from known-fate radio collar data using the survival R package [@therneau_modeling_2000], with precisions for years with no observed mortality estimated using a separate Bayesian model. Observed estimated survival is a Gaussian distributed function of the true survival probability: $$\hat{S_t} \sim \text{Normal}(S_t,1/\tau_t).$$ 
 We model true survival probability as an adjusted function of buffered anthropogenic disturbance $A_t$ with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a A_t+\epsilon^S_t; \epsilon^S_t \sim \text{Normal}(0,\sigma^2_{S}).$$ 
@@ -167,7 +169,7 @@ TO DO:
 ## A method for simulating example local demographic data
 
 ### Population dynamics
-To simulate plausible plausible demographic trajectories for example populations we used the slightly modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. As in the IPM, maximum potential recruitment rate is adjusted for sex ratio, misidentification biases (Appendix X) and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{c\dot{R}_t/2}{1+c\dot{R}_t/2};c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}, $$
+To simulate plausible plausible demographic trajectories for example populations we used a slightly modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. Maximum potential recruitment rate is adjusted for sex ratio, misidentification biases (Appendix X) and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{c\dot{R}_t/2}{1+c\dot{R}_t/2};c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}, $$
 where $w$ is a multiplier that defines the apparent number of adult females in the composition survey as a function of the number of collared animals, $q$ the ratio of young bulls to adult females, $u$ is the probability of misidentifying young bulls as adult females and vice versa, and $z$ is the probability of missing a calf.
  
 Realized recruitment rate varies with population density [@lacy_vortex_2017], and the number of juveniles recruiting to the post-juvenile class at the census is a binomially distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate: $$\dot{J}_{t} \sim \text{Binomial}(\dot{W}_t,\dot{X}_t[p_0-(p_0-p_k)(\frac{\dot{W}_t}{N_0k})^b]\frac{\dot{W}_t}{\dot{W}_t+a}).$$ Given parameters in Table X, recruitment rate is lowest $(0.5\dot{X}_t)$ when $\dot{N}_t=1$, approaches a maximum of $\dot{X}_t$ at intermediate population sizes, and declines to $0.6\dot{X}_t$ as the population reaches carrying capacity of $k=100$ times the initial population size. The post-juvenile female population in the next year includes both survivors and new recruits: $\dot{N}_{t+1}=\text{min}(\dot{W}_t+\dot{J}_t,r_{max}\dot{N}_t)$.
@@ -176,37 +178,7 @@ Interannual variation in survival and recruitment is modelled using truncated be
 $$\bar{S}_t \sim (46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
 $\phi^R \sim \text{Normal}(19.862,2.229)$ and $\phi^S \sim \text{Normal}(63.733,8.311)$ are precisions of the Beta distributed errors [@ferrari_beta_2004]. At the beginning of a simulation for an example population, regression coefficient values are sampled from Gaussian distributions (see Table \@ref(tab:priors)) and the population is assigned to quantiles of the Beta error distributions for survival and recruitment. The population remains in these quantiles as disturbance changes over time, so there is substantial persistent variation in recruitment and survival among example among populations (example figure). 
 
-### Observed survival from collars
-
-### Observed recruitment from calf:cow aerial surveys
-
-## Assessing the value of information
-
-TO DO: how to assess or quantify value in this context. Power to distinguish increasing from decreasing population? What else?
-
-## Scenarios
-
-Table 1. Example ranges. Ontario demographic information from [@mnrf_state_2014]. If two numbers given for Anthropogenic disturbance they are BEAD 2010 and 2015.
-*note that we've had some input on monitoring numbers from NL, BC, ON (and MB pending), so some of them may also be willing to give us case study examples to use here? Note can get details about SK1 from Phil's report.
-
-```{r}
-tbl <- "Range|Anthropogenic Disturbance|$\\lambda$|R|S|Survey Years
-Missisa|0.41|0.86|14.2|80%|2008-2012
-Churchill||0.96|19.5|87%|2011-2012
-"
-df <- read.delim(textConnection(tbl),header=FALSE,sep="|",strip.white=TRUE,stringsAsFactors=FALSE)
-names(df) <- unname(as.list(df[1,]))
-df <- df[-1,] # remove first row
-row.names(df)<-NULL
-knitr::kable(df)
-```
-TO DO: id examples from elsewhere to complement Ontario examples. Would be good to include an example where status is ok. What else, and why? WBI NWT ranges?
-*from Anna: withouot access to actual estimates of R and S for different ranges, some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, northern QC for really broad-expanse pop, or Labrador pops have long term monitoring data but uncertain status...)
-
-NOTE: would be great to info on number of collars per year in each example range. Though note MNRF recruitment estimates in some years came from aerial distribution surveys.
-*feedback from MonitoringWG contacts includes details on collar numbers for BC, ON, NL, (MB pending); e.g. in Ontario they aim for 20-30 collars in smaller pops, 35+ in bigger pops; Labrador aims to have between 5-25 collars monitored at any one time, depending on pop size; in BC, real numbers of collared animals have ranged been between 3-59 per pop/year, varying both across-yrs-within-pop and across-pop-within-yr [with COVID yrs by far the lowest].
-
-relevant refs: [@rettie_summary_2017];?
+## Monitoring scenarios
 
 ```{r monitoringScenarios, echo=FALSE,message=FALSE}
 
@@ -215,23 +187,41 @@ source(here::here("analysis/scripts/formatScenarios.R"))
 knitr::kable(tbl,caption="Monitoring scenarios parameters and values.")
 ```
 
+We assume collars are deployed in January, and last for up to 6 years. The target number of collared females $n$ varies among scenarios, as does the total duration of the monitoring program (Table \@ref(tab:monitoringScenarios)). Collars lost to mortality may be replaced each year ($o=1$), or there may be a 3 year gap between deployments ($o=4$). 
+
 *Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
 
-TO DO: figure out disturbance forecast scenarios. Can lift Mississa scenario from caribouMetrics paper. Get Churchill scenario from Colin's Lac Seul model with roads - can lift it from the Churchill full model if not easy to sub in Lac Seul. *and can maybe ask MonitoringWG contacts who seemed keen whether they'd have case studies to offer too...?
+### Observed survival of collared animals
+
+In our simulated populations, mortality risk does not vary over time or among individuals, so the observed state (dead or alive) of a collared animal $i$ in month $m$ and year $t$ depends on the true survival rate $\dot{S}_t$ (eq X) as follows: 
+$$\hat{I}_{i,t,m} \sim \text{Bernoulli}(\dot{S}^{1/12}_t\hat{I}_{i,t,m-1}).$$
+### Observed recruitment from composition surveys
+
+The number of cows in the composition survey $\hat{W}_t$ is given by the number of collared cows $\hat{T}_t$ and the apparent number of adult females per collared female calves observed in the composition survey $w$: 
+$$\hat{W}_t = w\hat{T}_t.$$
+The number of observed calves $\hat{J}_t$ also depends on the unadjusted apparent recruitment for the population $\dot{R}_t$:
+$$\hat{J}_t \sim \text{Binomial}(\hat{W}_t,\dot{R}_t).$$
+
+## Disturbance scenarios
+
+*from Anna: withouot access to actual estimates of R and S for different ranges, some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, northern QC for really broad-expanse pop, or Labrador pops have long term monitoring data but uncertain status...)
+
+*feedback from MonitoringWG contacts includes details on collar numbers for BC, ON, NL, (MB pending); e.g. in Ontario they aim for 20-30 collars in smaller pops, 35+ in bigger pops; Labrador aims to have between 5-25 collars monitored at any one time, depending on pop size; in BC, real numbers of collared animals have ranged been between 3-59 per pop/year, varying both across-yrs-within-pop and across-pop-within-yr [with COVID yrs by far the lowest].
+
+relevant refs: [@rettie_summary_2017];?
 
 TO DO: Fire scenarios? Add high fire scenario in appendix of one by one sensitivity checks.
 
-TO DO: run low initial population size scenario, put in appendix of one by one sensitivity checks. 
-
-TO DO: calculate change in anthro disturbance over 5 yrs across ranges to get realistic distribution of numbers of this & justify choice of parameters. run alternative scenario to put in one by one sensitivity appendix.
+TO DO: run low initial population size scenario, put in appendix of one by one sensitivity checks? 
 
 ```{r fig1, fig.cap="Anthropogenic disturbance and monitoring scenarios.", cache=TRUE}
 knitr::include_graphics(here::here("figs/forPaper/distScnscmult3ay3aSf1.png"))
 
 ```
 
+## Probability of correct status assessment
 
-## Decision support tool development
+## User interface and open, flexible, reuseable implementation
 
 Integration into caribouMetrics, shiny UI, integration into SpaDES & SyncroSim.
 
@@ -304,13 +294,12 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 |$t$|year|Year.|
 |$m$|month|Month.|
 |$i$|ID|Individual animal identifier.|
-|$y$|years|Assessment period for population growth rate.|
-|$N_0$|animals|Initial adult population size.|
 |**Observed**|
 |$A_t$|%|Buffered anthropogenic disturbance.|
 |$F_t$|%|Fire disturbance.| 
 |$\hat{J}_t$|animals|Calves observed in calf:cow survey.|
 |$\hat{W}_t$|animals|Cows observed in calf:cow survey.|
+|$\hat{T}_t$|animals|Number of collared cows.|
 |$\hat{S}_t$|probability|Kaplan-Meier estimate of observed adult female survival.|
 |$\tau_t$||Precision of Kaplan-Meier survival estimate.|
 |$\hat{I}_{i,t,m}$|0 or 1|Indicator of whether animal $i$ is dead or alive.|
@@ -338,7 +327,8 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 |$\dot{X}_t$|rate|Recruitment adjusted for sex ratio and (optionally) delayed age of first reproduction.|
 |$\dot{W}_t$|animals|Surviving adult females before recruitment.|
 |$\dot{J}_t$|animals|New recruits to adult age class.|
-|**True parameters**|
+|**True demographic parameters**|
+|$N_0$|animals|Initial adult population size.|
 |$\dot{\beta}^R_0$||Recruitment intercept.|
 |$\dot{\beta}^R_a$||Anthropogenic disturbance slope for recruitment.|
 |$\dot{\beta}^R_f$||Fire slope for recruitment.|
@@ -356,12 +346,22 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 |$l_S=0$||Minimum value for $\dot{S}_t$.|
 |$h_R=0$||Maximum value for $\dot{R}_t$.|
 |$h_S=0$||Maximum value for $\dot{S}_t$.|
+|**Observation model parameters**|
+|$d=1,2,4,8,16, \text{ or } 24$|years|Monitoring duration.|
+|$n=15,30, \text{ or } 60$|animals|Target number of collared females.|
+|$o=1 \text{ or } 4$|years|Years between collar deployments.|
+|$y=3$|years|Assessment period for population growth rate.|
+|$w=3,6,\text{ or } 9$|ratio|The apparent number of adult females per collared animal in composition survey.|
+|$q=\text{uniform}(0,0.6)$|ratio|True ratio of young bulls to adult females in composition survey.|
+|$u=\text{uniform}(0,0.2)$|probability|Probability of misidentifying young bulls as adult females and vice versa in composition survey.|
+|$z=\text{uniform}(0,0.2)$|probability|Probability of missing calves in composition survey.|
+|$c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}$||Bias correction term (Appendix X).|
 
 ## Model of bias in recruitment estimates from calf:cow surveys
 
 TO DO: get photo of calf:cow survey group. Label classes of animals to illustrate meaning of T, U, V, W, O, P, J, K.
 
-We assume each group of animals in a calf:cow survey contains one or more collared adult females ($T$), and may also include: uncollared adult females misidentified as young bulls ($U$); correctly identified uncollared adult females ($V$); correctly identified young bulls ($O$); young bulls misidentified as uncollared adult females ($P$); observed calves ($J$); and unobserved calves ($K$). The apparent number of adult females in the group is $T+V+P=Tw$, where $w$ is a multiplier that defines the apparent number of adult females as a function of the number of collared animals. The ratio of young bulls to uncollared adult females in the group is:
+We assume each group of animals in a calf:cow survey contains one or more collared adult females ($T$), and may also include: uncollared adult females misidentified as young bulls or unknown sex ($U$); correctly identified uncollared adult females ($V$); young bulls correctly identified as male or unknown sex ($O$); young bulls misidentified as uncollared adult females ($P$); observed calves ($J$); and unobserved calves ($K$). The apparent number of adult females in the group is $T+V+P=Tw$, where $w$ is a multiplier that defines the apparent number of adult females as a function of the number of collared animals. The ratio of young bulls to uncollared adult females in the group is:
 $$q = \frac{P+O}{U+V}.$$
 Assuming an equal probability $u$ of misidentifying young bulls as adult females and vice versa, we get $V=(U+V)(1-u)$ and $P=(O+P)u$. Given a probability $z$ of missing calves, we get $J=(J+K)(1-z)$.
 
@@ -376,9 +376,9 @@ $$X=R\frac{w(1+qu-u)}{2(w+qu-u)(1-z)}.$$
 For simplicity, we write $X$ as a function of a bias correction term $c$: 
 $$c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}; X=cR/2$$
 
-If we also choose to adjust for delayed age at first reproduction (), the adjusted recruitment rate becomes $$X=\frac{cR/2}{1+cR/2}.$$
+If we also adjust for delayed age at first reproduction (DeCesare et al. 2012; Eacker et al. 2019), the adjusted recruitment rate becomes $$X=\frac{cR/2}{1+cR/2}.$$
 
-```{r biasPlot, fig.cap="Variation in the sex and bias corrected recruitment rate $X$ with the cow multiplier $w$, the ratio of young bulls to adult females $q$, and the adult misidentification probability $u$, and the probability of missing a calf $z$. If only collared females are counted ($w=1$) and there is a risk of missing calves $z>0$ then the apparent recruitment rate $R$ will be lower than $X$ (first column). When uncollared animals are counted ($w>1$), the risk of misidentifying adults $u$ inflates the apparent recruitment rate $R$ as on average more cows are misidentified as bulls than vice versa, but this effect is smaller than the effect of missing calves $z$. Increasing the proportion of bulls in the group $q$ reduces the effect of adult misidentification $u$.", cache=TRUE}
+```{r biasPlot, fig.cap="Variation in the sex and bias corrected recruitment rate $X$ with the cow multiplier $w$, the ratio of young bulls to adult females $q$, and the adult misidentification probability $u$, and the probability of missing a calf $z$. If only collared females are counted ($w=1$) and there is a risk of missing calves $z>0$ then the apparent recruitment rate $R$ will be lower than $X$ (first column). When uncollared animals are counted ($w>1$), the risk of misidentifying adults $u$ inflates the apparent recruitment rate $R$ as on average more cows are misidentified as bulls than vice versa, but this effect is smaller than the effect of missing calves $z$. Increasing the proportion of bulls in the group $q$ reduces the effect of adult misidentification $u$.", fig.height=6,cache=TRUE}
 library(ggplot2)
 #Notes
 #q: assume more females than males in calf:cow group, so q<1
@@ -400,11 +400,37 @@ p$z=as.factor(p$z)
 
 base = ggplot(subset(p,!delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
   geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()+ylab("2X/R=c, without delayed reproduction")
-plot(base)
 
 base2 = ggplot(subset(p,delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
   geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()+ylab("2X/R, with delayed reproduction")
-plot(base2)
+
+ggpubr::ggarrange(base, base2, labels = "",
+                  ncol = 1, vjust = 1)
+
+```
+
+```{r biasDistribution, fig.cap="In the Bayesian model, uncertainty about the value of the bias correction term $c$ (grey bars) is approximated with a Gaussian distribution (red). In these examples, the ratio of young bulls to adult females $q$ varies uniformly between 0 and 0.6, the adult misidentification probability $u$ varies uniformly between 0 and 0.2, and the probability of missing a calf $z$ varies uniformly between 0 and 0.2. We assume that the apparent number of adult females per collared animal $w$ is known.", cache=TRUE}
+getBiasCorrection<-function(q,w,u,z){
+  c = w*(q*u+1-u)/((q*u+w-u)*(1-z))
+  return(c)
+}
+
+cr=expand.grid(w = c(1,2,3,4,5,6,7,8,9),rep=seq(1,10000))
+nr=nrow(cr)
+cr$c = getBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2))
+
+#get mean and sd as fn of w
+cs <- cr %>%
+  group_by(w) %>%
+  summarise(mean = mean(c), sd = sd(c))
+
+cr = merge(cr,cs)
+cr$ca= rnorm(nrow(cr),cr$mean,cr$sd)
+
+base = ggplot(cr,aes(x=c))+geom_histogram(aes(y=..density..))+
+  facet_wrap(~w,nrow=3,labeller=label_both)+theme_bw()+
+  geom_density(aes(x=ca),alpha=.2, fill="#FF6666",col = "#FF6666")
+plot(base)
 
 ```
 
