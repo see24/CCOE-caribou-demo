@@ -4,21 +4,24 @@ n_reps <- "all"
 
 # Run batches from Rscript that uses parallel backend and new caribouMetrics functions
 cpageId <- commandArgs(trailingOnly = TRUE)
-# cpageId <- 5
+
+cDir = getwd()
 
 library(caribouMetrics)
+
+# cpageId <- 5;n_reps <- 1;cDir = "C:/Users/HughesJo/Documents/gitprojects/Caribou-Demographic-Projection-Paper"
 
 setName = "s5"
 
 #######################
-dir.create(paste0("figs/",setName),recursive=T)
-dir.create(paste0("tabs/",setName),recursive=T)
-dir.create(paste0("results/",setName),recursive=T)
+dir.create(paste0(cDir,"/figs/",setName),recursive=T)
+dir.create(paste0(cDir,"/tabs/",setName),recursive=T)
+dir.create(paste0(cDir,"/results/",setName),recursive=T)
 
 
 simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
-allScns = read.csv(paste0("tabs/",setName,".csv"))
+allScns = read.csv(paste0(cDir,"/tabs/",setName,".csv"))
 unique(allScns$pageId)
 ####################
 eParsIn = list()
@@ -38,9 +41,10 @@ message("batch ", cpageId, " started")
 if(n_reps=="all"){
   scResults = caribouMetrics:::runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
 }else{
-  scResults = caribouMetrics:::runScnSet(subset(scns,rep<=n_reps),eParsIn,simBig,getKSDists=F,printProgress=F)
+  unique(scns$rep)
+  scResults = caribouMetrics:::runScnSet(subset(scns,rep<=n_reps)[1,],eParsIn,simBig,getKSDists=F,printProgress=F)
 }
 
-saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
+saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,n_reps,cpageId,".Rds"))
 
 message("batch ", cpageId, " complete")

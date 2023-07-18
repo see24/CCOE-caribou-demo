@@ -5,16 +5,17 @@ rawScns<-read.csv(here::here("tabs/s5.csv"))
 nrow(rawScns)
 rawScns = subset(rawScns,collarCount!=1)
 
-monitoringPars = list(obsYears=list(description = "monitoring duration",unit="years"),
-                      collarCount=list(description="target # of collars", unit="cows"),
-                      cowMult=list(description="calf:cow survey multiplier",unit = "cows per collared cow"),
-                      collarInterval = list(description="time between collar deployments", unit="years"),
-                      assessmentYrs = list(description="assessment duration",unit="years"))
+monitoringPars = list(obsYears=list(symbol= "d", description = "Monitoring duration.",unit="years"),
+                      collarCount=list(symbol="n",description="Target # of collars.", unit="cows"),
+                      collarInterval = list(symbol = "o",description="Years between collar deployments.", unit="years"),
+                      assessmentYrs = list(symbol="y",description="Assessment period for population growth rate.",unit="years"),
+                      cowMult=list(symbol="w",description="Cows per collared animal in composition survey.",unit = "ratio")
+                      )
 
 start=T
 for(par in names(monitoringPars)){
   #par="st"
-  crow = data.frame(name=par,description=monitoringPars[[par]]$description,
+  crow = data.frame(name=paste(monitoringPars[[par]]$symbol,par,sep=", "),description=monitoringPars[[par]]$description,
                     units=monitoringPars[[par]]$unit,
                     values = paste(unique(rawScns[,par]),collapse=","))
 

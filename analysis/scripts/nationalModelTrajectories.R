@@ -10,6 +10,12 @@ dia_shp <- 23
 err_col <- "grey50"
 
 baseDir <- "."
+
+getBiasCorrection<-function(w,q,u,z){
+  c = w*(q*u+1-u)/((q*u+w-u)*(1-z))
+  return(c)
+}
+
 #numbers from Johnson et al for validation
 johnsonCompare <- read.csv(paste0(baseDir,"/data/Johnson et al. figures5_6.csv"))
 
@@ -52,12 +58,8 @@ rateSummaries <- demographicRates(
 )
 
 #for each sample, select bias correction term from distributions
-getBiasCorrection<-function(q,w,u,z){
-  c = w*(q*u+1-u)/((q*u+w-u)*(1-z))
-  return(c)
-}
 
-str(rateSamples)
+str(popGrowthPars)
 
 cr = data.frame(replicate=unique(rateSamples$replicate))
 nr= nrow(cr)
