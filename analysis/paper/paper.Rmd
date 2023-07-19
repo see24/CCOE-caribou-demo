@@ -127,15 +127,19 @@ Collared females are also used in traditional estimates of recruitment (refs/exa
 Following Eacker et al. [-@eacker_web-based_2019], the observed number of calves $\hat{J}_t$ is a binomially distributed function of the observed number of adult female caribou $\hat{W}_t$ and the estimated recruitment rate $R_t$: $$\hat{J}_t \sim \text{Binomial}(\hat{W}_t,R_t).$$
 
 We model recruitment probability as a function of anthropogenic disturbance and fire with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$\log(R_t)=\beta^R_0+\beta^R_a A_t+\beta^R_f F_t+\epsilon^R_t; \epsilon^R_t \sim \text{Normal}(0,\sigma^2_{R}).$$ 
-Estimated recruitment probability is adjusted for sex ratio and delayed age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012] to get expected recruits per female:
-$$X_t=\frac{R_t/2}{1+R_t/2}.$$
-To maintain consistency with Johnson et al. [-@johnson_science_2020] also provide an option to only adjust for sex ratio $X_t=R_t/2$.
+Estimated recruitment probability is adjusted for sex ratio, misidentification biases (Appendix X), and (optionally) age of first reproduction [@eacker_web-based_2019;@decesare_estimating_2012] to get expected recruits per female:
+$$X_t=\frac{cR_t/2}{1+cR_t/2}.$$
+To maintain consistency with Johnson et al. [-@johnson_science_2020] we also provide an option to only adjust for sex ratio and misidentification biases $X_t=cR_t/2$.
+
+The composition survey bias correction term $c$ depends on the apparent number of adult females per collared animal $w$, the ratio of young bulls to adult females $q$, the probability of misidentifying young bulls as adult females and vice versa $u$, and the probability of missing a calf $z$ (Appendix X):
+$$c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}$$
+In the Bayesian model, prior uncertainty about the value of the bias correction term $c$ is approximated with a Gaussian distribution (Appendix X). Given the apparent number of adult females per collared animal $w$ in each monitoring scenario (Table \@ref(tab:monitoringScenarios)), we calculate the mean and standard deviation of 10,000 samples of $c$ assuming the ratio of young bulls to adult females $q$ varies uniformly between 0 and 0.6, the adult misidentification probability $u$ varies uniformly between 0 and 0.2, and the probability of missing a calf $z$ varies uniformly between 0 and 0.2.
 
 Also following [@eacker_web-based_2019], Kaplan-Meier estimates of observed adult female survival probability $\hat{S}_t$ and associated precisions $\tau_t$ are estimated from known-fate radio collar data using the survival R package [@therneau_modeling_2000], with precisions for years with no observed mortality estimated using a separate Bayesian model. Observed estimated survival is a Gaussian distributed function of the true survival probability: $$\hat{S_t} \sim \text{Normal}(S_t,1/\tau_t).$$ 
 We model true survival probability as an adjusted function of buffered anthropogenic disturbance $A_t$ with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a A_t+\epsilon^S_t; \epsilon^S_t \sim \text{Normal}(0,\sigma^2_{S}).$$ 
 To assess sensitivity of results to the survival estimation method, we also implemented an alternative parametric exponential survival model, wherein the observed state (alive or dead, $\hat{I}_{i,t,m}$) of an individual animal $i$ in year $t$ and month $m$ is Bernoulli distributed (ref IPM book): $$\hat{I}_{i,t,m} \sim \text{Bernoulli}(S^{1/12}_t\hat{I}_{i,t,m-1}).$$
 
-All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table \@ref(tab:priors)). We calibrated the prior distributions so that the 95% prediction interval from the IPM matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment (Appendix A).  
+All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table \@ref(tab:priors)). We calibrated the prior distributions so that the 95% prediction interval from the Bayesian model matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment (Appendix A).  
 
 ```{r priors, echo=FALSE,message=FALSE}
 
@@ -284,9 +288,9 @@ We should likely also have a pgph about costs of monitoring - it'll be pretty sh
 \newpage
 
 # Appendix
-##Definitions of variables and parameters in the Bayesian integrated population model
+##Definitions of variables and parameters in the Bayesian population model
 
-Table A1. Variables and parameters in the Bayesian integrated population model and the national demographic model.
+Table A1. Variables and parameters in the Bayesian population model and the national demographic model.
 
 |**Symbol**|**Units**|**Description**|
 |:-----|-----|:-----------|
@@ -361,7 +365,7 @@ Table A1. Variables and parameters in the Bayesian integrated population model a
 
 TO DO: get photo of calf:cow survey group. Label classes of animals to illustrate meaning of T, U, V, W, O, P, J, K.
 
-We assume each group of animals in a calf:cow survey contains one or more collared adult females ($T$), and may also include: uncollared adult females misidentified as young bulls or unknown sex ($U$); correctly identified uncollared adult females ($V$); young bulls correctly identified as male or unknown sex ($O$); young bulls misidentified as uncollared adult females ($P$); observed calves ($J$); and unobserved calves ($K$). The apparent number of adult females in the group is $T+V+P=Tw$, where $w$ is a multiplier that defines the apparent number of adult females as a function of the number of collared animals. The ratio of young bulls to uncollared adult females in the group is:
+We assume each group of animals in a calf:cow composition survey contains one or more collared adult females ($T$), and may also include: uncollared adult females misidentified as young bulls or unknown sex ($U$); correctly identified uncollared adult females ($V$); young bulls correctly identified as male or unknown sex ($O$); young bulls misidentified as uncollared adult females ($P$); observed calves ($J$); and unobserved calves ($K$). The apparent number of adult females in the group is $T+V+P=Tw$, where $w$ is a multiplier that defines the apparent number of adult females as a function of the number of collared animals. The ratio of young bulls to uncollared adult females in the group is:
 $$q = \frac{P+O}{U+V}.$$
 Assuming an equal probability $u$ of misidentifying young bulls as adult females and vice versa, we get $V=(U+V)(1-u)$ and $P=(O+P)u$. Given a probability $z$ of missing calves, we get $J=(J+K)(1-z)$.
 
@@ -387,7 +391,8 @@ p=expand.grid(delay=c(T,F),q=c(0,0.3,0.6),w=c(1,3,6),
               u=c(0,0.1,0.2),z=seq(0,0.2,length.out=3),R=seq(0.15,0.6,length.out=10))
 
 getX<-function(R,delay,q,w,u,z){
-  X = 0.5*R*w*(q*u+1-u)/((q*u+w-u)*(1-z))
+  c = compositionBiasCorrection(w,q,u,z)
+  X = 0.5*R*c
   X=X*(1-delay)+delay*X/(1+X)
   return(X)
 }
@@ -410,14 +415,10 @@ ggpubr::ggarrange(base, base2, labels = "",
 ```
 
 ```{r biasDistribution, fig.cap="In the Bayesian model, uncertainty about the value of the bias correction term $c$ (grey bars) is approximated with a Gaussian distribution (red). In these examples, the ratio of young bulls to adult females $q$ varies uniformly between 0 and 0.6, the adult misidentification probability $u$ varies uniformly between 0 and 0.2, and the probability of missing a calf $z$ varies uniformly between 0 and 0.2. We assume that the apparent number of adult females per collared animal $w$ is known.", cache=TRUE}
-getBiasCorrection<-function(q,w,u,z){
-  c = w*(q*u+1-u)/((q*u+w-u)*(1-z))
-  return(c)
-}
 
 cr=expand.grid(w = c(1,2,3,4,5,6,7,8,9),rep=seq(1,10000))
 nr=nrow(cr)
-cr$c = getBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2))
+cr$c = compositionBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2))
 
 #get mean and sd as fn of w
 cs <- cr %>%
