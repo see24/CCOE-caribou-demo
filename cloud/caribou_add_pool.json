@@ -1,6 +1,6 @@
 {
     "properties": {
-        "vmSize": "Standard_DS2_v3",
+        "vmSize": "Standard_D2S_v3",
         "deploymentConfiguration": {
             "virtualMachineConfiguration": {
 				"imageReference": {
@@ -23,7 +23,7 @@
         },
         "scaleSettings": {
             "fixedScale": {
-                "targetDedicatedNodes": 1
+                "targetDedicatedNodes": 24
             }
         },
 		"networkConfiguration": {
