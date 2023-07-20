@@ -24,8 +24,7 @@ message("install caribouMetrics from GitHub")
 
 # do deps separately so they can be installed from binaries
 # only do download once
-cm_download <- remotes::remote_download(remotes::github_remote("LandSciTech/caribouMetrics",
-                                                               ref = "add-bayes-demog"))
+cm_download <- remotes::remote_download(remotes::github_remote("LandSciTech/caribouMetrics"))
 
 try(remotes::install_deps(cm_download, upgrade = "never"))
 # this should do ones that were not available from binary
