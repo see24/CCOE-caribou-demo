@@ -1,4 +1,6 @@
 library(ggplot2)
+library(tidyverse)
+library(caribouMetrics)
 #Notes
 #q: assume more females than males in calf:cow group, so q<1
 
@@ -25,3 +27,41 @@ plot(base)
 base2 = ggplot(subset(p,delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
   geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()
 plot(base2)
+
+#############
+#approximate distribution for Bayesian model - lognormal
+cr=expand.grid(w = c(2,3,4,5,6,7,8,9),rep=seq(1,10000))
+nr=nrow(cr)
+cr$c = compositionBiasCorrection(q=runif(nr,0,0),w=cr$w,u=runif(nr,0,0),z=runif(nr,0.5,0.5))
+
+#get mean and sd as fn of w
+cs <- cr %>%
+  group_by(w) %>%
+  summarise(m = mean(c), v = var(c))
+cs$v[cs$v==0]=0.000001
+
+#now find lognormal parameters from mean and variance
+#https://www.johndcook.com/blog/2022/02/24/find-log-normal-parameters/
+cs$sig2 = log(1+cs$v/cs$m^2)
+cs$mu = log(cs$m)-cs$sig2/2
+
+cr = merge(cr,cs)
+cr$ca= exp(rnorm(nrow(cr),mean=cr$mu,sd=cr$sig2^0.5))
+
+base = ggplot(cr,aes(x=c))+geom_histogram(aes(y=..density..))+
+  facet_wrap(~w,nrow=3,labeller=label_both)+theme_bw()+
+  geom_density(aes(x=ca),alpha=.2, fill="#FF6666",col = "#FF6666")
+plot(base)
+
+
+mns <- cr %>%
+  group_by(w) %>%
+  summarise(c_mean = mean(c), c_sd = sd(c),ca_mean=mean(ca),ca_sd=sd(ca))
+
+base2 = ggplot(mns,aes(x=c_mean,y=ca_mean))+geom_point()+geom_abline(slope=1,intercept=0)
+plot(base2)
+#consider high and low bounds. When q and u = 1, c= 1/(1-z)
+z = seq(0,0.99,length.out=100)
+c = 1/(1-z)
+plot(log(c)~z)
+
