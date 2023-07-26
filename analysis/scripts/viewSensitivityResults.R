@@ -13,10 +13,9 @@ scn_defaults <- eval(formals(getScenarioDefaults))
 
 ########################
 #sensitivity
-setName = "s5"
+setName = "s6"
 dir.create(paste0("figs/",setName),recursive=T)
-scns = read.csv(here::here("tabs/s4.csv"))
-scns = subset(scns,cmult!=0)
+scns = read.csv(here::here("tabs/s6.csv"))
 pagesa=unique(scns$pageId)
 
 pages = pagesa

@@ -11,11 +11,6 @@ err_col <- "grey50"
 
 baseDir <- "."
 
-getBiasCorrection<-function(w,q,u,z){
-  c = w*(q*u+1-u)/((q*u+w-u)*(1-z))
-  return(c)
-}
-
 #numbers from Johnson et al for validation
 johnsonCompare <- read.csv(paste0(baseDir,"/data/Johnson et al. figures5_6.csv"))
 
@@ -63,13 +58,13 @@ str(popGrowthPars)
 
 cr = data.frame(replicate=unique(rateSamples$replicate))
 nr= nrow(cr)
-cr$c = getBiasCorrection(q=runif(nr,0,0.6),w=runif(nr,3,9),u=runif(nr,0,0.2),z=runif(nr,0,0.2))
+cr$c = compositionBiasCorrection(q=runif(nr,0,0.6),w=runif(nr,3,9),u=runif(nr,0,0.2),z=runif(nr,0,0.2))
 rateSamples$c=NULL;rateSamples=merge(rateSamples,cr)
 
 str(rateSamplesLarge)
 cr = data.frame(replicate=unique(rateSamplesLarge$replicate))
 nr= nrow(cr)
-cr$c = getBiasCorrection(q=runif(nr,0,0.6),w=runif(nr,3,9),u=runif(nr,0,0.2),z=runif(nr,0,0.2))
+cr$c = compositionBiasCorrection(q=runif(nr,0,0.6),w=runif(nr,3,9),u=runif(nr,0,0.2),z=runif(nr,0,0.2))
 rateSamplesLarge$c=NULL;rateSamplesLarge=merge(rateSamplesLarge,cr)
 
 str(rateSamplesLarge)
@@ -142,7 +137,7 @@ plot_lambda <- ggplot(oo,
             alpha = 1) + scale_color_manual(values=pal)+
   scale_x_continuous(limits = c(-1, 90), breaks = c(0, 20, 40, 60, 80)) +
   xlab("Anthropogenic disturbance (%)") +
-  ylab(expression("Population Growth Rate " * lambda)) +
+  ylab(expression("Population Growth Rate no delay" * lambda)) +
   theme(legend.position = "none", plot.margin = margin(l = 0.6, unit = "cm"))
 
 str(pars1)
@@ -159,7 +154,7 @@ plot_recruitment3 <- ggplot(data = rateSummaries,
   scale_x_continuous(limits = c(-1, 90), breaks = c(0, 20, 40, 60, 80)) +
   scale_y_continuous(limits = c(0, 0.4), breaks = c(0, 0.1, 0.2, 0.3, 0.4)) +
   xlab("Anthropogenic disturbance (%)") +
-  ylab(expression("Adjusted Recruitment " * dot(X)[t] *  " (F calves/cow)")) +
+  ylab(expression("Adjusted Recruitment no delay " * dot(X)[t])) +
   theme(legend.position = "none", plot.margin = margin(l = 0.6, unit = "cm"))
 plot(plot_recruitment3)
 
@@ -179,10 +174,10 @@ base1 <- ggplot(data = rateSummaries,
 plot(base1)
 
 # combine ggplots to one figure
-ggpubr::ggarrange(plot_lambda, plot_recruitment3,base1, labels = "",
+ggpubr::ggarrange(plot_recruitment3,base1,plot_lambda, labels = "",
                   ncol = 3, vjust = 1)
 
-ggsave(paste0(baseDir,"/analysis/paper/figs/DemographicRates.png"), width = 12, height = 3.6, units = "in",
+ggsave(paste0(baseDir,"/analysis/paper/figs/DemographicRates.png"), width = 12*0.8, height = 3.6*0.9, units = "in",
        dpi = 1200)
 
 ##################
@@ -221,14 +216,14 @@ ooT <- pars1 %>%
 oo$lambdaH <- oo$lambda
 oo$lambdaL <- oo$lambda
 
-plot_lambda <- ggplot(oo,
+plot_lambda2 <- ggplot(oo,
                       aes(x = Anthro, y = lambda, ymin = lambdaH, ymax = lambdaL)) +
   geom_line(size = 0.5,
             aes(x = Anthro, y = lambda, group = fullGrp, color = fullGrp),
             alpha = 1) + scale_color_manual(values=pal)+
   scale_x_continuous(limits = c(-1, 90), breaks = c(0, 20, 40, 60, 80)) +
   xlab("Anthropogenic disturbance (%)") +
-  ylab(expression("Population Growth Rate " * lambda)) +
+  ylab(expression("Population Growth Rate With Delay " * lambda)) +
   theme(legend.position = "none", plot.margin = margin(l = 0.6, unit = "cm"))
 
 plot_recruitment4 <- ggplot(data = rateSummaries,
@@ -243,14 +238,15 @@ plot_recruitment4 <- ggplot(data = rateSummaries,
   scale_x_continuous(limits = c(-1, 90), breaks = c(0, 20, 40, 60, 80)) +
   scale_y_continuous(limits = c(0, 0.4), breaks = c(0, 0.1, 0.2, 0.3, 0.4)) +
   xlab("Anthropogenic disturbance (%)") +
-  ylab(expression("Adjusted Recruitment " * dot(X)[t] *  " (F calves/cow)")) +
+  ylab(expression("Adjusted Recruitment with delay " * dot(X)[t])) +
   theme(legend.position = "none", plot.margin = margin(l = 0.6, unit = "cm"))
 plot(plot_recruitment4)
 
 # combine ggplots to one figure
-ggpubr::ggarrange(plot_lambda, plot_recruitment4,base1, labels = "",
-                  ncol = 3, vjust = 1)
+ggpubr::ggarrange(plot_recruitment4,base1, plot_lambda2,
+                  plot_recruitment3,base1, plot_lambda, labels = "",
+                  ncol = 3, nrow=2,vjust = 1)
 
-ggsave(paste0(baseDir,"/analysis/paper/figs/DemographicRatesDelay.png"), width = 12, height = 3.6, units = "in",
+ggsave(paste0(baseDir,"/analysis/paper/figs/DemographicRatesDelay.png"), width = 12*0.8, height = 3.6*0.9*2, units = "in",
        dpi = 1200)
 

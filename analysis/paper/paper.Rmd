@@ -121,6 +121,65 @@ mortality signal when no longer active after a predetermined period of time; mal
 
 Collared females are also used in traditional estimates of recruitment (refs/examples): collared individuals are located by aircraft and then the entire group of caribou is surveyed to estimate the ratio of cows:calves in the group... Because this estimate is based on more than just the collared sample of cows, the sample size for recruitment ests is typically larger than for survival (introduce the multiplier parameter).
 
+## Anthropogenic disturbance and monitoring scenarios
+
+```{r monitoringScenarios, echo=FALSE,message=FALSE}
+
+source(here::here("analysis/scripts/formatScenarios.R"))
+
+knitr::kable(tbl,caption="Monitoring scenarios parameters and values.")
+```
+
+```{r figDisturbance, fig.cap="Anthropogenic disturbance and monitoring scenarios.", cache=TRUE}
+knitr::include_graphics(here::here("figs/forPaper/distScnscmult6ay3aSf1.png"))
+
+```
+
+For this investigation we assume collars are deployed in January, and last for up to 6 years. The target number of collared females $n$ varies among scenarios, as does the total duration of the monitoring program (Table \@ref(tab:monitoringScenarios)). Collars lost to mortality may be replaced each year ($o=1$), or there may be a 3 year gap between deployments ($o=4$). 
+
+*Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
+
+*from Anna: withouot access to actual estimates of R and S for different ranges, some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, northern QC for really broad-expanse pop, or Labrador pops have long term monitoring data but uncertain status...)
+
+*feedback from MonitoringWG contacts includes details on collar numbers for BC, ON, NL, (MB pending); e.g. in Ontario they aim for 20-30 collars in smaller pops, 35+ in bigger pops; Labrador aims to have between 5-25 collars monitored at any one time, depending on pop size; in BC, real numbers of collared animals have ranged been between 3-59 per pop/year, varying both across-yrs-within-pop and across-pop-within-yr [with COVID yrs by far the lowest].
+
+relevant refs: [@rettie_summary_2017];?
+
+TO DO: Fire scenarios? Add high fire scenario in appendix of one by one sensitivity checks.
+
+TO DO: run low initial population size scenario, put in appendix of one by one sensitivity checks? 
+
+## Simulation of local population dynamics and monitoring
+
+### Population dynamics informed by national disturbance-demographic relationships
+
+```{r exampleTrajectories, fig.cap="Examples of simulated population trajectories from a model informed only by national disturbance-demographic relationships with (top row) and without (bottom row) delayed reproduction. White dots show means of 500 example trajectories. For reference, black lines and and shaded bands show means and 95\\% predictive intervals from Johnson et al's (2020) regression models without adjustment for misidentification bias and delayed reproduction.", cache=TRUE}
+
+knitr::include_graphics(here::here("analysis/paper/figs/DemographicRatesDelay.png"))
+
+```
+
+To simulate plausible plausible demographic trajectories for example populations we used a modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. Maximum potential recruitment rate is adjusted for sex ratio, misidentification biases (Appendix X) and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{c\dot{R}_t/2}{1+c\dot{R}_t/2};c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}, $$
+where $w$ is a multiplier that defines the apparent number of adult females in the composition survey as a function of the number of collared animals, $q$ the ratio of young bulls to adult females, $u$ is the probability of misidentifying young bulls as adult females and vice versa, and $z$ is the probability of missing a calf.
+
+Realized recruitment rate varies with population density [@lacy_vortex_2017], and the number of juveniles recruiting to the post-juvenile class at the census is a binomially distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate: $$\dot{J}_{t} \sim \text{Binomial}(\dot{W}_t,\dot{X}_t[p_0-(p_0-p_k)(\frac{\dot{W}_t}{N_0k})^b]\frac{\dot{W}_t}{\dot{W}_t+a}).$$ Given parameters in Table X, recruitment rate is lowest $(0.5\dot{X}_t)$ when $\dot{N}_t=1$, approaches a maximum of $\dot{X}_t$ at intermediate population sizes, and declines to $0.6\dot{X}_t$ as the population reaches carrying capacity of $k=100$ times the initial population size. The post-juvenile female population in the next year includes both survivors and new recruits: $\dot{N}_{t+1}=\text{min}(\dot{W}_t+\dot{J}_t,r_{max}\dot{N}_t)$.
+
+Interannual variation in survival and recruitment is modelled using truncated beta distributions [rtrunc function; @novomestky_package_2016]: $\dot{R}_t \sim \text{TruncatedBeta}(\bar{R}_t,\nu_R,l_R,h_R); \dot{S}_t \sim \text{TruncatedBeta}(\bar{S}_t,\nu_S,l_S,h_S)$. Coefficients of variation among years $(\nu_R,\nu_S)$ and maximum/minimum values $l_R,h_R,l_S,h_S$ for recruitment and survival are given in Table X. Expected recruitment ($\bar{R}_t$) and survival ($\bar{S}_t$) vary with disturbance according the beta regression models estimated by Johnson et al. [@johnson_science_2020]: $$ \bar{R}_t \sim Beta(\mu^R_t,\phi^R);log(\mu^R_t)=\dot{\beta^R_0}+\dot{\beta^R_a}A_t+\dot{\beta}^R_fF_t,$$
+$$\bar{S}_t \sim (46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
+$\phi^R \sim \text{Normal}(19.862,2.229)$ and $\phi^S \sim \text{Normal}(63.733,8.311)$ are precisions of the Beta distributed errors [@ferrari_beta_2004]. At the beginning of a simulation for an example population, regression coefficient values are sampled from Gaussian distributions (see Table \@ref(tab:priors)) and the population is assigned to quantiles of the Beta error distributions for survival and recruitment. The population remains in these quantiles as disturbance changes over time, so there is substantial persistent variation in recruitment and survival among example among populations (Figure \@ref(fig:exampleTrajectories)). 
+
+
+### Observed survival of collared animals
+
+In our simulated populations, mortality risk does not vary over time or among individuals, so the observed state (dead or alive) of a collared animal $i$ in month $m$ and year $t$ depends on the true survival rate $\dot{S}_t$ (eq X) as follows: 
+$$\hat{I}_{i,t,m} \sim \text{Bernoulli}(\dot{S}^{1/12}_t\hat{I}_{i,t,m-1}).$$
+
+### Observed recruitment from composition surveys
+
+The number of cows in the composition survey $\hat{W}_t$ is given by the number of collared cows $\hat{T}_t$ and the apparent number of adult females per collared female calves observed in the composition survey $w$: 
+$$\hat{W}_t = w\hat{T}_t.$$
+The number of observed calves $\hat{J}_t$ also depends on the unadjusted apparent recruitment for the population $\dot{R}_t$:
+$$\hat{J}_t \sim \text{Binomial}(\hat{W}_t,\dot{R}_t).$$
 
 ## Integration of local demographic data and national disturbance-demographic relationships in a Bayesian population model
 
@@ -139,7 +198,7 @@ Also following [@eacker_web-based_2019], Kaplan-Meier estimates of observed adul
 We model true survival probability as an adjusted function of buffered anthropogenic disturbance $A_t$ with a log link [@johnson_science_2020;@stewart_climate-informed_nodate;@dyson_existing_2022] and Gaussian distributed random year effect [@eacker_web-based_2019]: $$S_t=\text{min}(46 \tilde{S_t}-0.5)/45,1); \log(\tilde{S_t})=\beta^S_0+\beta^S_a A_t+\epsilon^S_t; \epsilon^S_t \sim \text{Normal}(0,\sigma^2_{S}).$$ 
 To assess sensitivity of results to the survival estimation method, we also implemented an alternative parametric exponential survival model, wherein the observed state (alive or dead, $\hat{I}_{i,t,m}$) of an individual animal $i$ in year $t$ and month $m$ is Bernoulli distributed (ref IPM book): $$\hat{I}_{i,t,m} \sim \text{Bernoulli}(S^{1/12}_t\hat{I}_{i,t,m-1}).$$
 
-All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table \@ref(tab:priors)). We calibrated the prior distributions so that the 95% prediction interval from the Bayesian model matches the range between the 2.5% and 97.5% quantiles of 1000 simulated recruitment (Appendix A).  
+All regression coefficients are assumed to be Gaussian distributed, with priors derived from the expected values and 95% confidence intervals estimated by Johnson et al (2020) (Table \@ref(tab:priors)). We calibrated the prior distributions so that the 95% prior prediction intervals for survival and recruitment from the Bayesian model match the range between the 2.5% and 97.5% quantiles of 1000 simulated survival and recruitment trajectories (Appendix A, Figure \@ref(fig:examplePredictions)).  
 
 ```{r priors, echo=FALSE,message=FALSE}
 
@@ -147,6 +206,12 @@ source(here::here("analysis/scripts/formatPriors.R"))
 
 knitr::kable(tbl,caption="Prior means and standard deviations of Gaussian distributed survival and reproduction model parameters.")
 #TO DO: indicate which of these are from Johnson, and which are calibrated.
+```
+
+```{r examplePredictions, fig.cap="Prior (top row) and posterior (bottom row) predictions from the Bayesian model for an example population trajectory. In this example scenario anthropogenic disturbance increases by 2\\% per year from 0 to 100\\%. The population is monitored for 15 years with 30 collars per year, and 6 cows per collared cow in the composition surveys. The prior means and 95\\% predictive intervals (top row, orange lines and shading) are similar to the means and ranges between the 2.5\\% and 97.5\\% quantiles of 3000 simulated survival and recruitment trajectories from the national model (top row, blue lines and shading). Local population data (open triangles) reduces uncertainty (bottom row), but when disturbance is very high local data is not required to predict viability (population growth < 1).", cache=TRUE}
+
+knitr::include_graphics(here::here("analysis/paper/figs/bayesianModelExamples.png"))
+
 ```
 
 We assume a simple two-class demographic model, with a census in late winter of surviving females and new recruits to the post-juvenile (aged 1+) class. The number of post-juvenile females that survive from year $t$ to the census $W_t$ is binomially distributed with survival probability $S_t$: $W_{t} \sim \text{Binomial}(N_t,S_t)$. The number of juveniles recruiting to the post-juvenile class at the census is a Poisson distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate $X_t$: $J_{t} \sim \text{Poisson}(X_tW_t)$. The post-juvenile female population in the next year includes both survivors and new recruits: $N_{t+1}=W_t+J_t$. Annual population growth rate $\lambda_t$ is set to 0 when $N_t$ is 0, and is otherwise $\lambda_t=N_{t+1}/N_t$. For more stable estimates of population status, we report average population growth over a period of $y$ years, calculated as $\bar{\lambda}_{y,t}=\sum_{x=t-y+1}^{x=t}\lambda_x$. The initial post-juvenile population size $N_0$ is 1000 animals. For reference, all variables and parameters are defined in Table A1. 
@@ -170,60 +235,10 @@ TO DO:
 * consider & comment on alternative choices made in this example https://poissonconsulting.shinyapps.io/bboushiny/. Follow Eacker example in all particulars, change some aspects, or do comparisons?
 * Ensure notation consistency amongst manuscript, UI, documentaiton and code where appropriate. 
 
-## A method for simulating example local demographic data
-
-### Population dynamics
-To simulate plausible plausible demographic trajectories for example populations we used a slightly modified version of Johnson et al's [-@johnson_science_2020] two-stage demographic model described by Dyson et al. [-@dyson_existing_2022]. The true number of post-juvenile females that survive from year $t$ to the census $\dot{W}_t$ is binomially distributed with true survival probability $\dot{S}_t$: $\dot{W}_{t} \sim \text{Binomial}(\dot{N}_t,\dot{S}_t)$. Maximum potential recruitment rate is adjusted for sex ratio, misidentification biases (Appendix X) and (optionally) delayed age at first reproduction $$\dot{X}_t=\frac{c\dot{R}_t/2}{1+c\dot{R}_t/2};c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}, $$
-where $w$ is a multiplier that defines the apparent number of adult females in the composition survey as a function of the number of collared animals, $q$ the ratio of young bulls to adult females, $u$ is the probability of misidentifying young bulls as adult females and vice versa, and $z$ is the probability of missing a calf.
- 
-Realized recruitment rate varies with population density [@lacy_vortex_2017], and the number of juveniles recruiting to the post-juvenile class at the census is a binomially distributed function of the number of surviving post-juvenile females and the adjusted recruitment rate: $$\dot{J}_{t} \sim \text{Binomial}(\dot{W}_t,\dot{X}_t[p_0-(p_0-p_k)(\frac{\dot{W}_t}{N_0k})^b]\frac{\dot{W}_t}{\dot{W}_t+a}).$$ Given parameters in Table X, recruitment rate is lowest $(0.5\dot{X}_t)$ when $\dot{N}_t=1$, approaches a maximum of $\dot{X}_t$ at intermediate population sizes, and declines to $0.6\dot{X}_t$ as the population reaches carrying capacity of $k=100$ times the initial population size. The post-juvenile female population in the next year includes both survivors and new recruits: $\dot{N}_{t+1}=\text{min}(\dot{W}_t+\dot{J}_t,r_{max}\dot{N}_t)$.
-
-Interannual variation in survival and recruitment is modelled using truncated beta distributions [rtrunc function; @novomestky_package_2016]: $\dot{R}_t \sim \text{TruncatedBeta}(\bar{R}_t,\nu_R,l_R,h_R); \dot{S}_t \sim \text{TruncatedBeta}(\bar{S}_t,\nu_S,l_S,h_S)$. Coefficients of variation among years $(\nu_R,\nu_S)$ and maximum/minimum values $l_R,h_R,l_S,h_S$ for recruitment and survival are given in Table X. Expected recruitment ($\bar{R}_t$) and survival ($\bar{S}_t$) vary with disturbance according the beta regression models estimated by Johnson et al. [@johnson_science_2020]: $$ \bar{R}_t \sim Beta(\mu^R_t,\phi^R);log(\mu^R_t)=\dot{\beta^R_0}+\dot{\beta^R_a}A_t+\dot{\beta}^R_fF_t,$$
-$$\bar{S}_t \sim (46\times Beta(\mu^S_t,\phi^S)-0.5)/45;log(\mu^S_t)=\dot{\beta^S_0}+\dot{\beta^S_a}A_t.$$
-$\phi^R \sim \text{Normal}(19.862,2.229)$ and $\phi^S \sim \text{Normal}(63.733,8.311)$ are precisions of the Beta distributed errors [@ferrari_beta_2004]. At the beginning of a simulation for an example population, regression coefficient values are sampled from Gaussian distributions (see Table \@ref(tab:priors)) and the population is assigned to quantiles of the Beta error distributions for survival and recruitment. The population remains in these quantiles as disturbance changes over time, so there is substantial persistent variation in recruitment and survival among example among populations (example figure). 
-
-## Monitoring scenarios
-
-```{r monitoringScenarios, echo=FALSE,message=FALSE}
-
-source(here::here("analysis/scripts/formatScenarios.R"))
-
-knitr::kable(tbl,caption="Monitoring scenarios parameters and values.")
-```
-
-We assume collars are deployed in January, and last for up to 6 years. The target number of collared females $n$ varies among scenarios, as does the total duration of the monitoring program (Table \@ref(tab:monitoringScenarios)). Collars lost to mortality may be replaced each year ($o=1$), or there may be a 3 year gap between deployments ($o=4$). 
-
-*Monitoring WG input from BC, ON, NL, (MB pending): lots of detail provided but generally those numbers suggest we could try values of ~3-10 [e.g. 3,6,9?] for the cow multiplier, 5-50 for collars [e.g. 5,10,20,40,60?], [not sure about renewal interval, but see SaraM email for some insights]. We know (e.g. from the MonitoringWG perspectives report/update to Rettie summary) that number of years of monitoring can be as low as 2 or as many as 20+
-
-### Observed survival of collared animals
-
-In our simulated populations, mortality risk does not vary over time or among individuals, so the observed state (dead or alive) of a collared animal $i$ in month $m$ and year $t$ depends on the true survival rate $\dot{S}_t$ (eq X) as follows: 
-$$\hat{I}_{i,t,m} \sim \text{Bernoulli}(\dot{S}^{1/12}_t\hat{I}_{i,t,m-1}).$$
-### Observed recruitment from composition surveys
-
-The number of cows in the composition survey $\hat{W}_t$ is given by the number of collared cows $\hat{T}_t$ and the apparent number of adult females per collared female calves observed in the composition survey $w$: 
-$$\hat{W}_t = w\hat{T}_t.$$
-The number of observed calves $\hat{J}_t$ also depends on the unadjusted apparent recruitment for the population $\dot{R}_t$:
-$$\hat{J}_t \sim \text{Binomial}(\hat{W}_t,\dot{R}_t).$$
-
-## Disturbance scenarios
-
-*from Anna: withouot access to actual estimates of R and S for different ranges, some potentially interesting other ranges to compare to could be an Alberta range or two, where there are ++years of R and S estimates but really low lambda (E.g. ESAR and WSAR have 27+ yrs consecutive monitoring but declining numbers and high disturbance), some sections of NWT1 that are thought to be self-sustaining and have pretty good data sets (e.g. Dehcho North and South, Hay River Lowlands with 13+yrs of S and R) -could also use other MB ranges as examples for fairly sparse data (though not as bad as ON), and QC or LAB ranges as examples of good data (e.g. how about Charlevoix for a very well monitored but tiny pop, northern QC for really broad-expanse pop, or Labrador pops have long term monitoring data but uncertain status...)
-
-*feedback from MonitoringWG contacts includes details on collar numbers for BC, ON, NL, (MB pending); e.g. in Ontario they aim for 20-30 collars in smaller pops, 35+ in bigger pops; Labrador aims to have between 5-25 collars monitored at any one time, depending on pop size; in BC, real numbers of collared animals have ranged been between 3-59 per pop/year, varying both across-yrs-within-pop and across-pop-within-yr [with COVID yrs by far the lowest].
-
-relevant refs: [@rettie_summary_2017];?
-
-TO DO: Fire scenarios? Add high fire scenario in appendix of one by one sensitivity checks.
-
-TO DO: run low initial population size scenario, put in appendix of one by one sensitivity checks? 
-
-```{r fig1, fig.cap="Anthropogenic disturbance and monitoring scenarios.", cache=TRUE}
-knitr::include_graphics(here::here("figs/forPaper/distScnscmult3ay3aSf1.png"))
-
-```
+TO DO: add example trajectory figure
 
 ## Probability of correct status assessment
+
 
 ## User interface and open, flexible, reuseable implementation
 
@@ -231,32 +246,8 @@ Integration into caribouMetrics, shiny UI, integration into SpaDES & SyncroSim.
 
 # Results
 
-TO DO: consider showing results in terms of average number of collars deployed per year rather than target # and renewal interval.
-
-```{r scn1, cache=TRUE,echo=FALSE, message=FALSE,results='hide'}
-if(runScenarios){
-  numObsYrs=c(2);startsByYr = 30 #25
-  scns=expand.grid(P=numObsYrs,sQ=c(0.5),st=startsByYr)
-  scResults = runScenario(scns)
-
-  png(here::here("figs/Figure1_Example.png"),
-    height = 4, width = fig_widths["mid"], units = "in",res=600)
-  print(plotRes(scResults$rr.summary.all, "Female population size",obs=scResults$obs.all,
-              lowBound=0,highBound=2000,facetVars=c("P","sQ")))
-  dev.off()
-}
-
-```
-
-```{r fig2, fig.cap="Example projections, assuming a target of 30 collars, renewed every 4 years, with 3 cows per collared cow included in aerial surveys, and a 1% increase in anthropogenic disturbance per year (as in Figure 1). The number of monitoring years varies from P=0 (top row) to P=24 (bottom row), and the anthropogenic disturbance footprint in 2023 varies from 0% (left column) to 60% (right column). A status assessment error occurs when the projected population growth rate is above one and the true rate is below one or vice versa. When disturbance is very high (e.g. Anthro2023 = 60) populations that differ substantially from one another (compare 'true' lines for high and low quantile populations) share the same status, and a projection informed only by national demographic disturbance relationships (P=0) is accurate for both. When disturbance is intermediate, populations that differ substantially from one another are more likely to differ in their status. In these cases, integrating local monitoring data improves projection accuracy (i.e. smaller distances between projected and true lines) and reduces status assessment errors.", cache=TRUE}
-knitr::include_graphics(here::here("figs/forPaper/examples.png"))
-```
-
-```{r fig3, fig.cap="Power analysis example result.", cache=TRUE}
-knitr::include_graphics(here::here("figs/forPaper/powercmult3ay3aSf1.png"))
-knitr::include_graphics(here::here("figs/forPaper/powerEffortcmult3ay3aSf1.png"))
-
-#TO DO: figure out how to put no monitoring results on these graphs.
+```{r figStatusErrors, fig.cap="The probability of a correct status assessment varies with the amount of anthropogenic disturbance (columns), the number of years projected (rows), and monitoring effort (see Figure 1 for scenarios). Probabilities are calculated for 200 example population trajectories (see example trajectories in Figure 2). For each example population, the status assessment is correct if the the Bayesian posterior mean and the true population growth rate are both less than or greater than one. When disturbance is very high the probability of correct status assessment is high even without local monitoring. Where disturbance is moderate, increasing the number of years of monitoring and the number of collars reduces uncertainty, but there are diminishing returns on additional monitoring as sample size increases.", cache=TRUE}
+knitr::include_graphics(here::here("figs/forPaper/powercmult6ay3aSf1.png"))
 ```
 
 
@@ -419,14 +410,10 @@ ggpubr::ggarrange(base, base2, labels = "",
 cr=expand.grid(w = c(1,2,3,4,5,6,7,8,9),rep=seq(1,10000))
 nr=nrow(cr)
 cr$c = compositionBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2))
-
-#get mean and sd as fn of w
-cs <- cr %>%
-  group_by(w) %>%
-  summarise(mean = mean(log(c)), sd = sd(log(c)))
+cs = compositionBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2),approx=T)
 
 cr = merge(cr,cs)
-cr$ca= exp(rnorm(nrow(cr),cr$mean,cr$sd))
+cr$ca= exp(rnorm(nrow(cr),mean=cr$mu,sd=cr$sig2^0.5))
 
 base = ggplot(cr,aes(x=c))+geom_histogram(aes(y=..density..))+
   facet_wrap(~w,nrow=3,labeller=label_both)+theme_bw()+
