@@ -1,38 +1,42 @@
 #devtools::load_all(here::here())
 
+scnsApplyAll = data.frame(qMin=0,qMax=0,uMin=0,uMax=0,zMin=0,zMax=0,adjustR=F,
+                          obsYears=1,collarCount=1,cowMult=1,projYears=1)
+#TO DO: resume here. Make cowMult=0 work.
+
 ########################
 #Survival
-#vary lse, sse, and ssv in factorial array. Outcome of interest is KS distance
-lse=seq(1,10,by=2);sse=0.08696*seq(0.2,1,by=0.2);ssv=seq(0.01,0.09,by=0.02)
+#vary sIntSEMod, sInterannualVar, and sInterannualVarSE in factorial array. Outcome of interest is KS distance
+sIntSEMod=seq(1,10,by=2);sInterannualVar=0.08696*seq(0.2,1,by=0.2);sInterannualVarSE=seq(0.01,0.09,by=0.02)
 
 #Looking for low KS distance from full range of input sims when given almost no info
-numObsYrs=c(1);startsByYr = 1;J=1
-scns=expand.grid(P=numObsYrs,aSf=0,J=J,st=startsByYr,lse=lse,sse=sse,ssv=ssv)
+scns=expand.grid(obsAnthroSlope = 0, projAnthroSlope = 0,sIntSEMod=sIntSEMod,sInterannualVar=sInterannualVar,sInterannualVarSE=sInterannualVarSE)
+scns=merge(scns,scnsApplyAll)
 scResults = runScenario(scns,survAnalysisMethod = "Exponential")
 KSAll = subset(scResults$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
 addBit = paste0("sQStarts",startsByYr)
-makeInterceptPlots(scResults,addBit=addBit,facetVars=c("lse","sse"),loopVars="ssv",whichPlots=c("Adult female survival"))
+makeInterceptPlots(scResults,addBit=addBit,facetVars=c("sIntSEMod","sInterannualVar"),loopVars="sInterannualVarSE",whichPlots=c("Adult female survival"))
 
 numObsYrs=c(15);startsByYr = 45;J=1;cw=200;sQ=0.025;rQ=0.025
-scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,lse=lse,sse=sse,ssv=ssv)
+scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,sIntSEMod=sIntSEMod,sInterannualVar=sInterannualVar,sInterannualVarSE=sInterannualVarSE)
 scResultsLow = runScenario(scns,quants=c(0.025,0.025),Anthro=0,survAnalysisMethod = "KaplanMeier")
 addBit = paste0("sQStarts",startsByYr,"low")
 KSLow = subset(scResultsLow$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
-makeInterceptPlots(scResultsLow,addBit=addBit,facetVars=c("lse","sse"),loopVars="ssv",
+makeInterceptPlots(scResultsLow,addBit=addBit,facetVars=c("sIntSEMod","sInterannualVar"),loopVars="sInterannualVarSE",
                    whichPlots=c("Adult female survival"),useNational=F)
 
 numObsYrs=c(15);startsByYr = 45;J=1;cw=200;sQ=0.975;rQ=0.975
-scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,lse=lse,sse=sse,ssv=ssv)
+scns=expand.grid(P=numObsYrs,aSf=0,J=J,sQ=sQ,rQ=rQ,st=startsByYr,cw=cw,sIntSEMod=sIntSEMod,sInterannualVar=sInterannualVar,sInterannualVarSE=sInterannualVarSE)
 scResultsHigh = runScenario(scns,quants=c(0.975,0.975),Anthro=0,survAnalysisMethod = "KaplanMeier")
 addBit = paste0("sQStarts",startsByYr,"high")
 KSHigh = subset(scResultsHigh$ksDists,(Year==2019)&(Parameter=="Adult female survival"))
-makeInterceptPlots(scResultsHigh,addBit=addBit,facetVars=c("ssv","sse"),loopVars="lse",
+makeInterceptPlots(scResultsHigh,addBit=addBit,facetVars=c("sInterannualVarSE","sInterannualVar"),loopVars="sIntSEMod",
                    whichPlots=c("Adult female survival"),survLow=0.8,useNational=F)
 
 KSAll$scn = "All"
 KSLow$scn = "Low"
 KSHigh$scn = "High"
-sCols = c("KSDistance","sse","lse","ssv","scn")
+sCols = c("KSDistance","sInterannualVar","sIntSEMod","sInterannualVarSE","scn")
 KS = rbind(subset(KSAll,select=sCols),subset(KSLow,select=sCols),subset(KSHigh,select=sCols))
 write.csv(KS,here::here(paste0("tabs/SurvKSAll.csv")))
 

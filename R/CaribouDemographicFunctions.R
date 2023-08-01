@@ -7,7 +7,7 @@
 
 # run scenario - temporary wrapper
 runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMeier",getKSDists=T){
-  #quants=NULL;Anthro=NULL;survAnalysisMethod="KaplanMeier";getKSDists=F
+  #quants=NULL;Anthro=NULL;survAnalysisMethod="Exponential";getKSDists=F
   retdir <-getwd()
 
   dir.create("figs")
