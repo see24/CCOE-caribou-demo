@@ -38,7 +38,7 @@ scns = subset(allScns, pageId==cpageId)
 
 str(scns)
 
-scns$zMin= 0.5; scns$zMax = 0.5
+scns$zMin= 0; scns$zMax = 0
 scns$uMin = 0; scns$uMax = 0
 scns$qMin = 0; scns$qMax = 0
 message("batch ", cpageId, " started")

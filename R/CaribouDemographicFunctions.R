@@ -43,15 +43,15 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   return(scResults)
 }
 
-makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
+makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("sIntSEMod","sInterannualVar"),
                                loopVars = NULL,
                                whichPlots = c("Adult female survival",
                                               "Population growth rate",
                                               "Recruitment",
                                               "Female population size"),
                                survLow = 0.6, type = "png", useNational = T) {
-  # facetVars=c("lre","sre");loopVars="srv";scResults=scResultsHigh
-
+  # facetVars=c("sIntSEMod","sInterannualVar");loopVars="sInterannualVarSE";scResults=scResults
+  #useNational=T;type="png"; survLow=0.6
   if (!is.null(loopVars)) {
     loopSet <- unique(subset(scResults$rr.summary.all, select = loopVars))
     loopSet$dummy <- 1
@@ -74,10 +74,14 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
 
     addBitO <- paste0(addBit, aa)
 
-    if (useNational) {
-      simRange <- merge(scResults$sim.all, crow)
-    } else {
-      simRange <- NULL
+    scResCur = scResults
+    scResCur$sim.all = merge(scResCur$sim.all,crow)
+    scResCur$rr.summary.all = merge(scResCur$rr.summary.all, crow)
+    if(is.element("obs.all",names(scResCur))){
+      scResCur$obs.all = merge(scResCur$obs.all, crow)
+    }
+    if (!(useNational)) {
+      scResCur$sim.all = NULL
     }
 
     if (is.element("Adult female survival", whichPlots)) {
@@ -88,9 +92,8 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/Surv", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Adult female survival",
-                    obs = merge(scResults$obs.all, crow),
-                    lowBound = survLow, simRange = simRange, facetVars = facetVars
+      print(caribouMetrics:::plotRes(scResCur, "Adult female survival",
+                    lowBound = survLow, facetVars = facetVars
       ))
       dev.off()
     }
@@ -103,9 +106,8 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/Lambda", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Population growth rate",
-                    obs = merge(scResults$obs.all, crow),
-                    lowBound = 0, simRange = simRange, facetVars = facetVars
+      print(caribouMetrics:::plotRes(scResCur, "Population growth rate",
+                    lowBound = 0, facetVars = facetVars
       ))
       dev.off()
     }
@@ -118,9 +120,8 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/Rec", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Recruitment",
-                    obs = merge(scResults$obs.all, crow),
-                    lowBound = 0, simRange = simRange, facetVars = facetVars
+      print(caribouMetrics:::plotRes(scResCur, "Recruitment",
+                    lowBound = 0, facetVars = facetVars
       ))
       dev.off()
     }
@@ -133,8 +134,7 @@ makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("P", "sQ"),
       } else {
         pdf(paste0("figs/FPOP", addBitO, ".pdf"), width = 10, height = 7)
       }
-      print(caribouMetrics:::plotRes(merge(scResults$rr.summary.all, crow), "Female population size",
-                    obs = merge(scResults$obs.all, crow),
+      print(caribouMetrics:::plotRes(scResCur, "Female population size",
                     lowBound = 0, facetVars = facetVars
       ))
       dev.off()
