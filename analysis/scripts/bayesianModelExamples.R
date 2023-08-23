@@ -7,9 +7,9 @@ library(RColorBrewer)
 
 baseDir <- "."
 
-simBig<-getSimsNational(replicates=3000,forceUpdate=T) #If called with default parameters, use saved object to speed things up.
+simBig<-getSimsNational(replicates=3000,forceUpdate=T)
 
-monitoringScns = data.frame(obsYears=c(1,15),collarCount=c(1,30),cowMult=c(6),collarInterval=c(1),assessmentYrs=c(3))
+monitoringScns = data.frame(obsYears=c(1,15),collarCount=c(0,30),cowMult=c(6),collarInterval=c(1),assessmentYrs=c(3))
 stateScns = data.frame(obsAnthroSlope=c(2),projAnthroSlope=c(2))
 stateScns = merge(stateScns,data.frame(rep=seq(1:1)))
 
