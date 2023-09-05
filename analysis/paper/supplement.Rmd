@@ -1,0 +1,324 @@
+---
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+    bookdown::html_document2:
+      number_sections: yes
+bibliography: CaribouDemographicModel.bib
+csl: "../templates/journal-of-forest-ecology-and-management.csl" # Insert path for the bib-style
+
+editor_options: 
+  chunk_output_type: inline
+---
+
+# (APPENDIX) Supplementary Material for National demographic-disturbance relationships and local monitoring both reduce uncertainty in projections of boreal caribou population viability: tools to support monitoring decisions {-}
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  echo = FALSE,
+  comment = "#>",
+  fig.path = "../figs/",
+  dpi = 300
+)
+```
+
+```{r setup2}
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(purrr)
+library(ggpubr)
+library(MetBrewer)
+library(here)
+library(tmap)
+library(sf)
+library(caribouMetrics)
+
+devtools::load_all(here::here())
+
+#set paths
+data_path_raw <- "analysis/data/raw_data/"
+data_path_drvd <- "analysis/data/derived_data"
+
+pal_nm <- "Redon"
+
+fig_widths <- c(min = 1.18, single = 3.543, mid = 5.51, two = 7.48)
+
+runScenarios = F 
+doPriorCalibration=F #Note the prior calibration is time consuming. 
+
+resultScenario = "S6"
+```
+
+# Definitions of variables and parameters in the Bayesian population model
+
+Table A1. Variables and parameters in the Bayesian population model and the national demographic model.
+
+|**Symbol**|**Units**|**Description**|
+|:-----|-----|:-----------|
+|**Indices & constants**|
+|$t$|year|Year.|
+|$m$|month|Month.|
+|$i$|ID|Individual animal identifier.|
+|**Observed**|
+|$A_t$|%|Buffered anthropogenic disturbance.|
+|$F_t$|%|Fire disturbance.| 
+|$\hat{J}_t$|animals|Calves observed in calf:cow survey.|
+|$\hat{W}_t$|animals|Cows observed in calf:cow survey.|
+|$\hat{T}_t$|animals|Number of collared cows.|
+|$\hat{S}_t$|probability|Kaplan-Meier estimate of observed adult female survival.|
+|$\tau_t$||Precision of Kaplan-Meier survival estimate.|
+|$\hat{I}_{i,t,m}$|0 or 1|Indicator of whether animal $i$ is dead or alive.|
+|**Estimated state**|
+|$R_t$|rate|Recruitment (calves per cow).|
+|$S_t$|probability|Adult female survival.|
+|$N_t$|animals|Adult female population size.|
+|$\bar{\lambda}_{y,t}$|rate|Average population growth over $y$ years.|
+|$X_t$|rate|Recruitment adjusted for sex ratio and (optionally) delayed age of first reproduction.|
+|$W_t$|animals|Surviving adult females before recruitment.|
+|$J_t$|animals|New recruits to adult age class.|
+|$\lambda_t$|rate|Annual population growth.|
+|**Estimated Parameters**|
+|$\beta^R_0$||Recruitment intercept.|
+|$\beta^R_a$||Anthropogenic disturbance slope for recruitment.|
+|$\beta^R_f$||Fire slope for recruitment.|
+|$\sigma^2_{R}$||Variance in random effect of year on recruitment.|
+|$\beta^S_0$||Survival intercept.|
+|$\beta^S_a$||Anthropogenic disturbance slope for survival.|
+|$\sigma^2_{S}$||Variance in random effect of year on survival.|
+|**True state**|
+|$\dot{R}_t$|rate|Recruitment (calves per cow).|
+|$\dot{S}_t$|probability|Adult female survival.|
+|$\dot{N}_t$|animals|Adult female population size.|
+|$\dot{X}_t$|rate|Recruitment adjusted for sex ratio and (optionally) delayed age of first reproduction.|
+|$\dot{W}_t$|animals|Surviving adult females before recruitment.|
+|$\dot{J}_t$|animals|New recruits to adult age class.|
+|**True demographic parameters**|
+|$N_0$|animals|Initial adult population size.|
+|$\dot{\beta}^R_0$||Recruitment intercept.|
+|$\dot{\beta}^R_a$||Anthropogenic disturbance slope for recruitment.|
+|$\dot{\beta}^R_f$||Fire slope for recruitment.|
+|$\dot{\beta}^S_0$||Survival intercept.|
+|$\dot{\beta}^S_a$||Anthropogenic disturbance slope for survival.|
+|$p_0=1$||Maximum recruitment multiplier.|
+|$p_k=0.6$||Recruitment multiplier at carrying capacity.|
+|$k=100$||Carrying capacity multiplier.|
+|$b=4$||Density dependence shape parameter.|
+|$a=1$||Allee effect parameter.|
+|$r_{max}=1.3$||Maximum population growth rate.|
+|$\nu_R=0.46$||Coefficient of variation in $\dot{R}_t$ among years.|
+|$\nu_S=0.08696$||Coefficient of variation in $\dot{S}_t$ among years.|
+|$l_R=0$||Minimum value for $\dot{R}_t$.|
+|$l_S=0$||Minimum value for $\dot{S}_t$.|
+|$h_R=0$||Maximum value for $\dot{R}_t$.|
+|$h_S=0$||Maximum value for $\dot{S}_t$.|
+|**Observation model parameters**|
+|$d=1,2,4,8,16, \text{ or } 24$|years|Monitoring duration.|
+|$n=15,30, \text{ or } 60$|animals|Target number of collared females.|
+|$o=1 \text{ or } 4$|years|Years between collar deployments.|
+|$y=3$|years|Assessment period for population growth rate.|
+|$w=3,6,\text{ or } 9$|ratio|The apparent number of adult females per collared animal in composition survey.|
+|$q=\text{uniform}(0,0.6)$|ratio|True ratio of young bulls to adult females in composition survey.|
+|$u=\text{uniform}(0,0.2)$|probability|Probability of misidentifying young bulls as adult females and vice versa in composition survey.|
+|$z=\text{uniform}(0,0.2)$|probability|Probability of missing calves in composition survey.|
+|$c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}$||Bias correction term (Appendix X).|
+
+# Model of bias in recruitment estimates from calf:cow surveys
+
+TO DO: get photo of calf:cow survey group. Label classes of animals to illustrate meaning of T, U, V, W, O, P, J, K.
+
+We assume each group of animals in a calf:cow composition survey contains one or more collared adult females ($T$), and may also include: uncollared adult females misidentified as young bulls or unknown sex ($U$); correctly identified uncollared adult females ($V$); young bulls correctly identified as male or unknown sex ($O$); young bulls misidentified as uncollared adult females ($P$); observed calves ($J$); and unobserved calves ($K$). The apparent number of adult females in the group is $T+V+P=Tw$, where $w$ is a multiplier that defines the apparent number of adult females as a function of the number of collared animals. The ratio of young bulls to uncollared adult females in the group is:
+$$q = \frac{P+O}{U+V}.$$
+Assuming an equal probability $u$ of misidentifying young bulls as adult females and vice versa, we get $V=(U+V)(1-u)$ and $P=(O+P)u$. Given a probability $z$ of missing calves, we get $J=(J+K)(1-z)$.
+
+Our objective is to model the sex and bias-corrected recruitment rate $X=\frac{J+K}{2(T+U+V)}$ as a function of the observed calf:cow ratio $R=J/(T+V+P)$, the cow multiplier $w$, the ratio of young bulls to adult females $q$, and the misidentification probabilities $u$ and $z$. We start by solving for $T+U+V$ as a function of $q,w,u$ and $T$. Recognize that $P=Tw-T-V$, $U+V=V/(1-u)$, and $P+O=P/u$ to write $q$ as 
+$$q=\frac{Tw-T-V}{uV/(1-u)}.$$
+Rearrange to get 
+$$V=\frac{T(w-1)(1-u)}{qu+1-u}.$$
+Recognize that $U=Vu/(1-u)$ to write $T+U+V$ as a function of $q,w,u$ and $T$: 
+$$T+U+V=T\frac{qu+w-u}{qu+1-u}.$$
+Recognize that the number of observed calves $J$ is the product of the apparent recruitment rate and the apparent number of adult females $J=RTw$, and that therefore $J+K=RTw/(1-z)$ to rewrite the bias corrected recruitment rate $X=\frac{J+K}{2(T+U+V)}$ as a function of $w,u,z$ and $R$:
+$$X=R\frac{w(1+qu-u)}{2(w+qu-u)(1-z)}.$$
+For simplicity, we write $X$ as a function of a bias correction term $c$: 
+$$c=\frac{w(1+qu-u)}{(w+qu-u)(1-z)}; X=cR/2$$
+
+If we also adjust for delayed age at first reproduction (DeCesare et al. 2012; Eacker et al. 2019), the adjusted recruitment rate becomes $$X=\frac{cR/2}{1+cR/2}.$$
+
+```{r biasPlot, fig.cap="Variation in the sex and bias corrected recruitment rate $X$ with the cow multiplier $w$, the ratio of young bulls to adult females $q$, and the adult misidentification probability $u$, and the probability of missing a calf $z$. If only collared females are counted ($w=1$) and there is a risk of missing calves $z>0$ then the apparent recruitment rate $R$ will be lower than $X$ (first column). When uncollared animals are counted ($w>1$), the risk of misidentifying adults $u$ inflates the apparent recruitment rate $R$ as on average more cows are misidentified as bulls than vice versa, but this effect is smaller than the effect of missing calves $z$. Increasing the proportion of bulls in the group $q$ reduces the effect of adult misidentification $u$.", fig.height=6,cache=TRUE}
+library(ggplot2)
+#Notes
+#q: assume more females than males in calf:cow group, so q<1
+
+p=expand.grid(delay=c(T,F),q=c(0,0.3,0.6),w=c(1,3,6),
+              u=c(0,0.1,0.2),z=seq(0,0.2,length.out=3),R=seq(0.15,0.6,length.out=10))
+
+getX<-function(R,delay,q,w,u,z){
+  c = compositionBiasCorrection(w,q,u,z)
+  X = 0.5*R*c
+  X=X*(1-delay)+delay*X/(1+X)
+  return(X)
+}
+
+p$X = getX(p$R,p$delay,p$q,p$w,p$u,p$z)
+
+p$grp = paste(p$u,p$z)
+p$u=as.factor(p$u)
+p$z=as.factor(p$z)
+
+base = ggplot(subset(p,!delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
+  geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()+ylab("2X/R=c, without delayed reproduction")
+
+base2 = ggplot(subset(p,delay),aes(x=R,y=2*X/R,col=z,linetype=u,group=grp))+
+  geom_hline(yintercept=1)+geom_line()+facet_grid(q~w,labeller=label_both)+theme_bw()+ylab("2X/R, with delayed reproduction")
+
+ggpubr::ggarrange(base, base2, labels = "",
+                  ncol = 1, vjust = 1)
+
+```
+
+```{r biasDistribution,fig.cap="In the Bayesian model, uncertainty about the value of the bias correction term $c$ (grey bars) is approximated with a Log-normal distribution (red). In these examples, the ratio of young bulls to adult females $q$ varies uniformly between 0 and 0.6, the adult misidentification probability $u$ varies uniformly between 0 and 0.2, and the probability of missing a calf $z$ varies uniformly between 0 and 0.2. We assume that the apparent number of adult females per collared animal $w$ is known.", cache=TRUE}
+
+cr=expand.grid(w = c(1,2,3,4,5,6,7,8,9),rep=seq(1,10000))
+nr=nrow(cr)
+cr$c = compositionBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2))
+cs = compositionBiasCorrection(q=runif(nr,0,0.6),w=cr$w,u=runif(nr,0,0.2),z=runif(nr,0,0.2),approx=T)
+
+cr = merge(cr,cs)
+cr$ca= exp(rnorm(nrow(cr),mean=cr$mu,sd=cr$sig2^0.5))
+
+base = ggplot(cr,aes(x=c))+geom_histogram(aes(y=..density..))+
+  facet_wrap(~w,nrow=3,labeller=label_both)+theme_bw()+
+  geom_density(aes(x=ca),alpha=.2, fill="#FF6666",col = "#FF6666")
+plot(base)
+
+```
+
+# Calibration of Priors
+
+```{r priorCalibration, cache=TRUE,echo=FALSE, message=FALSE,results='hide'}
+if(doPriorCalibration){
+
+  source(here::here("analysis/scripts/calibratePriors.R"))
+}else{
+  KS<-read.csv(here::here("tabs/SurvKSAll.csv"))
+  KSRec<-read.csv(here::here("tabs/RecKSAll.csv"))
+
+}
+  #library(ggplot2);fig_widths=data.frame(two=7)
+  KS$SigmaMean = KS$sInterannualVar
+  KS$SigmaSD = KS$sInterannualVarSE
+  KS=subset(KS,scn=="All")
+  png(here::here("figs/PriorKSDists.png"),
+    height = 3, width = fig_widths["two"], units = "in",res=600)
+    base = ggplot(KS,aes(x=sIntSEMod,y=KSDistance,color=SigmaMean))+
+    geom_point()+facet_wrap(~SigmaSD,labeller="label_both")+theme_bw()+ylab("Kolmogorov-Smirnov Distance")+xlab("sIntSEMod: multiplier on SD of survival intercept")
+    print(base)
+  dev.off()
+
+  KSRec$SigmaMean = KSRec$rInterannualVar
+  KSRec$SigmaSD = KSRec$rInterannualVarSE
+  KSRec=subset(KSRec,scn=="All")
+  png(here::here("figs/PriorKSDistsRec.png"),
+    height = 3, width = fig_widths["two"], units = "in",res=600)
+    base = ggplot(KSRec,aes(x=rIntSEMod,y=KSDistance,color=SigmaMean))+
+    geom_point()+facet_wrap(~SigmaSD,labeller="label_both")+theme_bw()+ylab("Kolmogorov-Smirnov Distance")+xlab("rIntSEMod: multiplier on SD of recruitment intercept")
+    print(base)
+  dev.off()
+```
+
+
+```{r PriorKSDists, fig.cap="Similarity of the prior survival distribution to the distribution of simulated outcomes from the national model measured by Kolmogorov-Smirnov distance [ks.test function in @r_core_team_r_2022]. The distributions are similar when the multiplier on the prior standard deviation of the survival intercept (sIntSEMod: $\\beta^S_0$ in Table 2) is 5 and the mean and standard deviations of the prior distribution of the random effect of year on survival are low  (SigmaMean & SigmaSD, $\\sigma^2_S$ in Table 2). Anthropogenic disturbance is set to 0 in these scenarios." , cache=TRUE}
+knitr::include_graphics(here::here("figs/PriorKSDists.png"))
+
+```
+
+```{r PriorAllFits, fig.cap="Differences between prior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, the standard deviation of the random effect prior (SigmaSD: $\\sigma^2_S$ in Table 2) is 0.03, and anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
+
+knitr::include_graphics(here::here("figs/SurvInterceptAllsInterannualVarSE0.03.png"))
+```
+
+```{r PriorLowFits, fig.cap="Posterior predictive survival distributions from the Bayesian model ('local') assuming intensive monitoring (15 years of 60 collars per year) of populations from the 2.5 \\% quantile of the national model. In these examples, the standard deviation of the random effect prior (SigmaSD: $\\sigma^2_S$ in Table 2) is 0.03, and  anthropogenic disturbance is 0. Bands show 95 \\% posterior predictive intervals, black dots show true survival rates from the simulated population, and open triangles show observed survival rates. When the multiplier on the prior standard deviation of the survival intercept (sIntSEMod: $\\beta^S_0$ in Table 2) is too low (<5) the insufficiently vague priors substantially influence the posterior distributions, yielding poor local parameter estimates.", cache=TRUE}
+
+knitr::include_graphics(here::here("figs/SurvsurvInterceptLowsInterannualVarSE0.03.png"))
+```
+
+```{r PriorAllFitsAnthro90, fig.cap="Differences between prior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, anthropogenic disturbance is 90\\%. When the multiplier on the prior standard deviation of the survival slope (sSlopeSEMod: $\\beta^S_a$ in Table 2) is 3, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95\\% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}
+knitr::include_graphics(here::here("figs/SurvSlopeAll.png"))
+```
+
+```{r PriorHighFitsAnthro90, fig.cap="Posterior predictive survival distributions from the Bayesian model, assuming intensive monitoring (15 years of 60 collars per year) of populations from the 97.5 \\% quantile of the national model. In these examples, anthropogenic disturbance is 90\\%, and the effect of anthropogenic disturbance varies from none (sSlopeMod=0) through expected (sSlopeMod=1) to double the expected slope (sSlopeMod=2). All considered multipliers on the prior standard deviation of the survival slope (sSlopeSEMod: $\\beta^S_a$ in Table 2) are sufficiently vague to reflect local variation among populations. Bands show 95 \\% posterior predictive intervals, black dots show true survival rates from the simulated population, and open triangles show observed survival rates.", cache=TRUE}
+knitr::include_graphics(here::here("figs/SurvSlopeHigh.png"))
+```
+
+Prior parameter values should be set so that, given no monitoring data, the prior survival distribution is similar to the distribution of simulated outcomes from the national model in the case of no anthropogenic disturbance. This condition is met when the multiplier on the prior standard deviation of the survival intercept (sIntSEMod: $\beta^S_0$ in Table 2) is 5 and the mean and standard deviations of the prior distribution of the random effect of year on survival are low  (SigmaMean & SigmaSD, $\sigma^2_S$ in Table 2) (Figs \@ref(fig:PriorKSDists) and \@ref(fig:PriorAllFits)). Priors should also be vague enough so that, given intensive monitoring of populations where survival is higher or lower than the national average ('High' and 'Low' scenarios: 15 years of 60 collars per year from 97.5% and 2.5% quantiles of the national model), posteriors reflect local survival, rather than priors from the national model. Setting the mean and standard deviations of the prior distribution of the random effect of year on survival to moderately low values (SigmaMean=0.034784, SigmaSD=0.03, $\sigma^2_S$ in Table 2) allows both conditions to be met (Figs \@ref(fig:PriorKSDists), \@ref(fig:PriorAllFits) and \@ref(fig:PriorLowFits)).
+
+
+```{r PriorKSDistsRec, fig.cap="Similarity of the prior recruitment distribution to the distribution of simulated outcomes from the national model measured by Kolmogorov-Smirnov distance [ks.test function in @r_core_team_r_2022]. The distributions are similar when the multiplier on the prior standard deviation of the survival intercept (rIntSEMod: $\\beta^R_0$ in Table 2) is 4 and the mean and standard deviations of the prior distribution of the random effect of year on survival are low  (SigmaMean & SigmaSD, $\\sigma^2_R$ in Table 2). Anthropogenic disturbance is set to 0 in these scenarios." , cache=TRUE}
+knitr::include_graphics(here::here("figs/PriorKSDistsRec.png"))
+```
+
+```{r PriorAllFitsRec, fig.cap="Differences between prior predictive recruitment distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, the standard deviation of the random effect prior (SigmaSD: $\\sigma^2_R$ in Table 2) is 0.22, and anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
+knitr::include_graphics(here::here("figs/RecInterceptAllrInterannualVarSE0.22.png"))
+```
+
+```{r PriorHighFitsRec, fig.cap="Posterior predictive recruitment distributions from the Bayesian model ('local') assuming intensive monitoring (9*60 cows per year for 15 years) of populations from the 97.5% quantile of the national model.  In these examples, the standard deviation the random effect prior (SigmaSD: $\\sigma^2_R$ in Table 2) is 0.22, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals, black dots show true recruitment rates from the simulated population, and open triangles show observed recruitment rates.", cache=TRUE}
+knitr::include_graphics(here::here("figs/RecInterceptHighrInterannualVarSE0.22.png"))
+```
+
+```{r PriorAllFitsAnthro90Rec, fig.cap="Differences between prior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, anthropogenic disturbance is 90\\%. When the multiplier on the prior standard deviation of the recruitment slope (rSlopeSEMod: $\\beta^R_a$ in Table 2) is 4, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95\\% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}
+knitr::include_graphics(here::here("figs/RecSlopeAll.png"))
+```
+
+```{r PriorHighFitsAnthro90Rec, fig.cap="Posterior predictive recruitment distributions from the Bayesian model, assuming intensive monitoring (15 years of 60 collars per year) of populations from the 97.5 \\% quantile of the national model. In these examples, anthropogenic disturbance is 90\\%, and the effect of anthropogenic disturbance varies from none (rSlopeMod=0) through expected (rSlopeMod=1) to double the expected slope (rSlopeMod=2). All considered multipliers on the prior standard deviation of the recruitment slope >1 (rSlopeSEMod: $\\beta^R_a$ in Table 2) are sufficiently vague to reflect local variation among populations. Bands show 95 \\% posterior predictive intervals, black dots show true survival rates from the simulated population, and open triangles show observed survival rates.", cache=TRUE}
+knitr::include_graphics(here::here("figs/RecSlopeHigh.png"))
+```
+
+Similarly, prior parameter values should be set so that, given no monitoring data, the prior recruitment distribution is similar to the distribution of simulated outcomes from the national model in the case of no anthropogenic disturbance. This condition is met when the multiplier on the prior standard deviation of the recruitment intercept (rIntSEMod: $\beta^R_0$ in Table 2) is 4 and the mean and standard deviations of the prior distribution of the random effect of year on survival are low  (SigmaMean & SigmaSD, $\sigma^2_R$ in Table 2) (Figs \@ref(fig:PriorKSDistsRec) and \@ref(fig:PriorAllFitsRec)). Priors should also be vague enough so that, given intensive monitoring of populations where recruitment is higher or lower than the national average ('High' and 'Low' scenarios: 15 years of 9*60 cows per year from 97.5% and 2.5% quantiles of the national model), posteriors reflect local recruitment, rather than priors from the national model. Setting the mean and standard deviations of the prior distribution of the random effect of year on recruitment to moderately low values (SigmaMean=0.23, SigmaSD=0.22, $\sigma^2_R$ in Table 2) allows both conditions to be met (Figs \@ref(fig:PriorKSDistsRec), \@ref(fig:PriorAllFitsRec) and \@ref(fig:PriorHighFitsRec)).
+
+\newpage
+
+# Alternative disturbance and monitoring scenarios
+
+```{r figDisturbanceAnthroStatic, fig.cap="Anthropogenic disturbance and monitoring scenarios.", cache=TRUE}
+knitr::include_graphics(here::here(paste0("figs/",resultScenario,"/distScnscmult6ay3aSf0.png")))
+
+```
+
+```{r powercmult3ay3aSf0, fig.cap="The probability of a correct status assessment varies with the amount of anthropogenic disturbance (columns), the number of years projected (rows), and monitoring effort (see Figure \\@ref(fig:figDisturbanceAnthroStatic) for for static anthropogenic disturbance scenarios). In these examples there are 3 cows per collared cow in recruitment surveys. See Figure 4 for additional details. ", cache=TRUE}
+knitr::include_graphics(here::here(paste0("figs/",resultScenario,"/powercmult3ay3aSf0.png")))
+```
+
+```{r powercmult6ay3aSf0, fig.cap="The probability of a correct status assessment varies with the amount of anthropogenic disturbance (columns), the number of years projected (rows), and monitoring effort (see Figure \\@ref(fig:figDisturbanceAnthroStatic) for static anthropogenic disturbance scenarios). In these examples there are 6 cows per collared cow in recruitment surveys. See Figure 4 for additional details. ", cache=TRUE}
+knitr::include_graphics(here::here(paste0("figs/",resultScenario,"/powercmult6ay3aSf0.png")))
+```
+
+```{r powercmult9ay3aSf0, fig.cap="The probability of a correct status assessment varies with the amount of anthropogenic disturbance (columns), the number of years projected (rows), and monitoring effort (see Figure \\@ref(fig:figDisturbanceAnthroStatic) for static anthropogenic disturbance scenarios). In these examples there are 9 cows per collared cow in recruitment surveys. See Figure 4 for additional details. ", cache=TRUE}
+knitr::include_graphics(here::here(paste0("figs/",resultScenario,"/powercmult9ay3aSf0.png")))
+```
+
+```{r powercmult3ay3aSf1, fig.cap="The probability of a correct status assessment varies with the amount of anthropogenic disturbance (columns), the number of years projected (rows), and monitoring effort (see Figure 1 for scenarios in which anthropogenic disturbance increases over time). In these examples there are 3 cows per collared cow in recruitment surveys. See Figure 4 for additional details. ", cache=TRUE}
+knitr::include_graphics(here::here(paste0("figs/",resultScenario,"/powercmult3ay3aSf1.png")))
+```
+
+```{r powercmult9ay3aSf1, fig.cap="The probability of a correct status assessment varies with the amount of anthropogenic disturbance (columns), the number of years projected (rows), and monitoring effort (see Figure 1 for scenarios in which anthropogenic disturbance increases over time). In these examples there are 9 cows per collared cow in recruitment surveys. See Figure 4 for additional details. ", cache=TRUE}
+knitr::include_graphics(here::here(paste0("figs/",resultScenario,"/powercmult9ay3aSf1.png")))
+```
+
+# Colophon
+
+This report was generated on `r Sys.time()` using the following computational environment and dependencies:
+
+```{r colophon, cache = FALSE}
+# which R packages and versions?
+#if ("devtools" %in% installed.packages()) devtools::session_info()
+```
+
+The current Git commit details are:
+
+```{r}
+# what commit is this file at? 
+#if ("git2r" %in% installed.packages() & git2r::in_repository(path = ".")) git2r::repository(here::here())  
+```

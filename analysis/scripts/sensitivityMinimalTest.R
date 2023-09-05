@@ -36,7 +36,13 @@ eParsIn$collarNumYears=6
 
 scns = subset(allScns, pageId==cpageId)
 
+str(scns)
+
+scns$zMin= 0; scns$zMax = 0
+scns$uMin = 0; scns$uMax = 0
+scns$qMin = 0; scns$qMax = 0
 message("batch ", cpageId, " started")
+
 
 if(n_reps=="all"){
   scResults = caribouMetrics:::runScnSet(scns,eParsIn,simBig,getKSDists=F,printProgress=F)
