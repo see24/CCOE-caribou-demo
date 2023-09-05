@@ -403,27 +403,26 @@ population growth rate are both above or below 1.
 
 ## User interface and open, flexible, reuseable implementation
 
-Integration into caribouMetrics, shiny UI, integration into SpaDES &
-SyncroSim.
-
 To make this work more user friendly and accessible to decision makers
 we built a user interface that allows for the exploration of different
-monitoring and anthropogenic disturbance scenarios. We have also made
-the R code and functions needed to carry out this analysis available as
-an R package caribouMetrics. We built the user interface as an R Shiny
-app [@chang2023], building off and expanding an app published by Eacker
-et al. [-@eacker_web-based_2019]. The app allows users to provide
-existing local data or simulate data based on national models as shown
-above, define an anthropogenic disturbance scenario and make
-projections. The results shown are similar to Figure
+monitoring and anthropogenic disturbance scenarios. We built the user
+interface as an R Shiny app [@chang2023], building off and expanding an
+app published by Eacker et al. [-@eacker_web-based_2019]. The app allows
+users to provide existing local data or simulate data based on national
+models as shown above, define an anthropogenic disturbance scenario and
+make projections. The results shown are similar to Figure
 \@ref(fig:examplePredictions) and allow for comparisons to the national
 model. Many parameters controlling the Bayesian model, local data
 simulation and antropogenic scenario are exposed in the app with
 sensible defaults set, such that novice users can get reasonable results
 quickly while advanced user can customise the projections to suite their
-needs. The caribouMetrics package is available on GitHub at
-<https://github.com/LandSciTech/caribouMetrics> and a package website
-with detailed documentation is also available
+needs. We have also made the R code needed to run the app and carry out
+the above analysis available as an R package, caribouMetrics. Making our
+code available as an R package ensures that it is flexible and can be
+re-used or expanded upon in future projects or combined with other tools
+and packages (eg SpaDES or SyncroSym). The caribouMetrics package is
+available on GitHub at <https://github.com/LandSciTech/caribouMetrics>
+and a package website with detailed documentation is also available
 (<https://landscitech.github.io/caribouMetrics/>).
 
 # Results
