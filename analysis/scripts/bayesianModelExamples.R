@@ -87,7 +87,7 @@ leg <- ggpubr::get_legend(leg)
 plts <- ggpubr::ggarrange(recPrior, survPrior, lambdaPrior,
                           recPosterior, survPosterior, lambdaPosterior, labels = "",
                           ncol = 3, nrow = 2, vjust = 1)
-ggpubr::ggarrange(plts, leg, ncol = 2, widths = c(6,1))
+ggpubr::ggarrange(plts, leg, ncol = 2, widths = c(6,1))+bgcolor("white")
 
 ggsave(paste0(baseDir,"/analysis/paper/figs/bayesianModelExamples.png"),
        width = 12*0.8, height = 3.6*2, units = "in",
