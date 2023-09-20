@@ -43,14 +43,14 @@ runScenario<-function(scns,quants=NULL,Anthro=NULL,survAnalysisMethod="KaplanMei
   return(scResults)
 }
 
-makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("sIntSEMod","sInterannualVar"),
+makeInterceptPlots <- function(scResults, addBit = "", facetVars = c("sIntSEMod","sSigmaMean"),
                                loopVars = NULL,
                                whichPlots = c("Adult female survival",
                                               "Population growth rate",
                                               "Recruitment",
                                               "Female population size"),
                                survLow = 0.6, type = "png", useNational = T) {
-  # facetVars=c("sIntSEMod","sInterannualVar");loopVars="sInterannualVarSE";scResults=scResults
+  # facetVars=c("sIntSEMod","sSigmaMean");loopVars="sSigmaSD";scResults=scResults
   #useNational=T;type="png"; survLow=0.6
   if (!is.null(loopVars)) {
     loopSet <- unique(subset(scResults$rr.summary.all, select = loopVars))

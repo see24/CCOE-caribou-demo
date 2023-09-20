@@ -1,4 +1,4 @@
-"","KSDistance","rInterannualVar","rIntSEMod","rInterannualVarSE","scn"
+"","KSDistance","rSigmaMean","rIntSEMod","rSigmaSD","scn"
 "5",0.192,0.23,1,0.14,"All"
 "15",0.1254,0.23,2.5,0.14,"All"
 "25",0.0621,0.23,4,0.14,"All"

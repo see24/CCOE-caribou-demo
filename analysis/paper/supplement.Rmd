@@ -208,8 +208,6 @@ if(doPriorCalibration){
 
 }
   #library(ggplot2);fig_widths=data.frame(two=7)
-  KS$SigmaMean = KS$sInterannualVar
-  KS$SigmaSD = KS$sInterannualVarSE
   KS=subset(KS,scn=="All")
   png(here::here("figs/PriorKSDists.png"),
     height = 3, width = fig_widths["two"], units = "in",res=600)
@@ -218,8 +216,6 @@ if(doPriorCalibration){
     print(base)
   dev.off()
 
-  KSRec$SigmaMean = KSRec$rInterannualVar
-  KSRec$SigmaSD = KSRec$rInterannualVarSE
   KSRec=subset(KSRec,scn=="All")
   png(here::here("figs/PriorKSDistsRec.png"),
     height = 3, width = fig_widths["two"], units = "in",res=600)
@@ -237,12 +233,12 @@ knitr::include_graphics(here::here("figs/PriorKSDists.png"))
 
 ```{r PriorAllFits, fig.cap="Differences between prior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, the standard deviation of the random effect prior (SigmaSD: $\\sigma^2_S$ in Table 2) is 0.03, and anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
 
-knitr::include_graphics(here::here("figs/SurvInterceptAllsInterannualVarSE0.03.png"))
+knitr::include_graphics(here::here("figs/SurvInterceptAllsSigmaSD0.03.png"))
 ```
 
 ```{r PriorLowFits, fig.cap="Posterior predictive survival distributions from the Bayesian model ('local') assuming intensive monitoring (15 years of 60 collars per year) of populations from the 2.5 \\% quantile of the national model. In these examples, the standard deviation of the random effect prior (SigmaSD: $\\sigma^2_S$ in Table 2) is 0.03, and  anthropogenic disturbance is 0. Bands show 95 \\% posterior predictive intervals, black dots show true survival rates from the simulated population, and open triangles show observed survival rates. When the multiplier on the prior standard deviation of the survival intercept (sIntSEMod: $\\beta^S_0$ in Table 2) is too low (<5) the insufficiently vague priors substantially influence the posterior distributions, yielding poor local parameter estimates.", cache=TRUE}
 
-knitr::include_graphics(here::here("figs/SurvsurvInterceptLowsInterannualVarSE0.03.png"))
+knitr::include_graphics(here::here("figs/SurvsurvInterceptLowsSigmaSD0.03.png"))
 ```
 
 ```{r PriorAllFitsAnthro90, fig.cap="Differences between prior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, anthropogenic disturbance is 90\\%. When the multiplier on the prior standard deviation of the survival slope (sSlopeSEMod: $\\beta^S_a$ in Table 2) is 3, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95\\% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}
@@ -261,11 +257,11 @@ knitr::include_graphics(here::here("figs/PriorKSDistsRec.png"))
 ```
 
 ```{r PriorAllFitsRec, fig.cap="Differences between prior predictive recruitment distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, the standard deviation of the random effect prior (SigmaSD: $\\sigma^2_R$ in Table 2) is 0.22, and anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.",  cache=TRUE}
-knitr::include_graphics(here::here("figs/RecInterceptAllrInterannualVarSE0.22.png"))
+knitr::include_graphics(here::here("figs/RecInterceptAllrSigmaSD0.22.png"))
 ```
 
 ```{r PriorHighFitsRec, fig.cap="Posterior predictive recruitment distributions from the Bayesian model ('local') assuming intensive monitoring (9*60 cows per year for 15 years) of populations from the 97.5% quantile of the national model.  In these examples, the standard deviation the random effect prior (SigmaSD: $\\sigma^2_R$ in Table 2) is 0.22, and  anthropogenic disturbance is 0. Bands show 95% posterior predictive intervals, black dots show true recruitment rates from the simulated population, and open triangles show observed recruitment rates.", cache=TRUE}
-knitr::include_graphics(here::here("figs/RecInterceptHighrInterannualVarSE0.22.png"))
+knitr::include_graphics(here::here("figs/RecInterceptHighrSigmaSD0.22.png"))
 ```
 
 ```{r PriorAllFitsAnthro90Rec, fig.cap="Differences between prior predictive survival distributions from the Bayesian model ('local') and simulated outcomes from the national model ('national'), assuming no local monitoring. In these examples, anthropogenic disturbance is 90\\%. When the multiplier on the prior standard deviation of the recruitment slope (rSlopeSEMod: $\\beta^R_a$ in Table 2) is 4, the posterior survival distribution is similar to the distribution of simulated outcomes from the national model. Bands show 95\\% posterior predictive intervals ('local'), and the 2.5th and 97.5th percentiles for 1000 sample populations from the national model.", cache=TRUE}
