@@ -38,32 +38,58 @@ labFontSize = 10; breakInterval=5
 
 priorResult = caribouMetrics:::runScnSet(scns[1,],eParsIn,simBig,getKSDists=F,printProgress=F)
 priorResult$obs.all=NULL
+yr_scale1 <- scale_x_continuous(breaks = 2023:2072 %>% .[0:9*5+1],
+                                labels = 2009:2058 %>% .[0:9*5+1] )
+yr_scale2 <- scale_x_continuous(breaks = 2009:2058 %>% .[0:9*5+1],
+                                labels = 2009:2058 %>% .[0:9*5+1] )
 recPrior =  plotRes(priorResult, "Recruitment", lowBound=0, highBound = 0.75,
-                    legendPosition="left",breakInterval=breakInterval,labFontSize=labFontSize)
+                    legendPosition="none",breakInterval=breakInterval,
+                    labFontSize=labFontSize) +
+  yr_scale1 +
+  labs(tag = "a")
 plot(recPrior)
 survPrior =  plotRes(priorResult, "Adult female survival", lowBound=0.6,
-                     legendPosition="none",breakInterval=breakInterval,labFontSize=labFontSize)
+                     legendPosition="none",breakInterval=breakInterval,
+                     labFontSize=labFontSize)+
+  yr_scale1
 plot(survPrior)
 lambdaPrior =  plotRes(priorResult, "Population growth rate", lowBound=0.6,
-                       legendPosition="none",breakInterval=breakInterval,labFontSize=labFontSize)
+                       legendPosition="none",breakInterval=breakInterval,
+                       labFontSize=labFontSize)+
+  yr_scale1 +
+  ylim(c(0, 1.2))
 plot(lambdaPrior)
 
 posteriorResult = caribouMetrics:::runScnSet(scns[2,],eParsIn,simBig,getKSDists=F,printProgress=F)
 recPosterior =  plotRes(posteriorResult, "Recruitment", lowBound=0,highBound = 0.75,
-                        legendPosition="left",breakInterval=breakInterval,labFontSize=labFontSize)
+                        legendPosition="none",breakInterval=breakInterval,
+                        labFontSize=labFontSize)+
+  yr_scale2 +
+  labs(tag = "b")
 plot(recPosterior)
 survPosterior =  plotRes(posteriorResult, "Adult female survival", lowBound=0.6,
-                         legendPosition="none",breakInterval=breakInterval,labFontSize=labFontSize)
+                         legendPosition="none",breakInterval=breakInterval,
+                         labFontSize=labFontSize)+
+  yr_scale2
 plot(survPosterior)
 lambdaPosterior =  plotRes(posteriorResult, "Population growth rate", lowBound=0.6,
-                           legendPosition="none",breakInterval=breakInterval,labFontSize=labFontSize)
+                           legendPosition="none",breakInterval=breakInterval,
+                           labFontSize=labFontSize)+
+  yr_scale2 +
+  ylim(c(0, 1.2))
 plot(lambdaPosterior)
 
-# combine ggplots to one figure
-ggpubr::ggarrange(recPrior,survPrior, lambdaPrior,
-                  recPosterior,survPosterior, lambdaPosterior, labels = "",
-                  ncol = 3, nrow=2,vjust = 1,widths=c(1,0.7,0.7))
+leg <- plotRes(posteriorResult, "Recruitment", lowBound=0,highBound = 0.75,
+               legendPosition="left",breakInterval=breakInterval,labFontSize=labFontSize)
+leg <- ggpubr::get_legend(leg)
 
-ggsave(paste0(baseDir,"/analysis/paper/figs/bayesianModelExamples.png"), width = 12*0.8, height = 3.6*2, units = "in",
+# combine ggplots to one figure
+plts <- ggpubr::ggarrange(recPrior, survPrior, lambdaPrior,
+                          recPosterior, survPosterior, lambdaPosterior, labels = "",
+                          ncol = 3, nrow = 2, vjust = 1)
+ggpubr::ggarrange(plts, leg, ncol = 2, widths = c(6,1))
+
+ggsave(paste0(baseDir,"/analysis/paper/figs/bayesianModelExamples.png"),
+       width = 12*0.8, height = 3.6*2, units = "in",
        dpi = 1200)
 
