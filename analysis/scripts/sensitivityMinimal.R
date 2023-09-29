@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
 
-# Run batches from Rscript that uses parallel backend and new caribouMetrics functions
 cpageId <- commandArgs(trailingOnly = TRUE)
 # cpageId <- 1
 #setwd("C:/Users/HughesJo/Documents/gitprojects/Caribou-Demographic-Projection-Paper")

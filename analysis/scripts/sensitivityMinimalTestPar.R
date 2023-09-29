@@ -1,25 +1,21 @@
 #!/usr/bin/env Rscript
 
-
-# Run batches from Rscript that uses parallel backend and new caribouMetrics functions
-n_batches <- 24
-n_scns <- "all"
+n_batches <- 12
+n_scns <- 2
 
 library(doFuture)
 library(caribouMetrics)
 
-setName = "s5"
+setName = "s6"
 
 #######################
 dir.create(paste0("figs/",setName),recursive=T)
 dir.create(paste0("tabs/",setName),recursive=T)
 dir.create(paste0("results/",setName),recursive=T)
 
-future::plan("multisession")
+future::plan("multisession", workers = future::availableCores() - 2)
 
 foreach(cpageId = 1:n_batches, .options.future = list(seed = TRUE)) %dofuture% {
-
-  sink(paste0("outbatch_", cpageId, ".txt"))
 
   simBig<-getSimsNational() #If called with default parameters, use saved object to speed things up.
 
@@ -47,7 +43,6 @@ foreach(cpageId = 1:n_batches, .options.future = list(seed = TRUE)) %dofuture% {
   saveRDS(scResults,paste0("results/",setName,"/rTest",cpageId,".Rds"))
 
   message("batch ", cpageId, " complete")
-  sink()
 
 }
 future::plan("sequential")

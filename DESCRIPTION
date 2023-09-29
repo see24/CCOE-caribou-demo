@@ -30,4 +30,5 @@ Imports:
     data.table,
     tidyr,
     doFuture,
-    future
+    future,
+    foreach

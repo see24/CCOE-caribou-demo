@@ -2,7 +2,6 @@
 #nohup Rscript --vanilla "analysis/scripts/sensitivityMinimalTest.R" 1 &
 n_reps <- 1
 
-# Run batches from Rscript that uses parallel backend and new caribouMetrics functions
 cpageId <- commandArgs(trailingOnly = TRUE)
 
 cDir = getwd()
