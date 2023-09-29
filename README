@@ -1,0 +1,19 @@
+# Caribou example for CCOE
+
+This is a simplified version of a real analysis that we did run on Azure batch. There were a few different ways of parallelizing the script that we tried, either within R, or with a bash script, or finally by making a different bash script for each bash and using a pool with 24 nodes and 24 different tasks. We used the later option in the end because there were some randomly generated errors that were not being caught by our code and were causing the whole task not to complete and then none of the results were being uploaded. With 24 separate tasks we were able to restart tasks that failed.
+
+## Needed to run locally
+sensitivityMinimalTestPar.R is what I would have normally done locally. It runs the batches in parallel using one R script
+
+sensitivityMinimalTest.R is set up to run from a bash script and is how my supervisor would do it locally and how we ended up doing it on the cloud.
+
+tabs folder has the input scenario parameter permutations to run.
+
+## Used to run in the cloud
+I left the following in to show what I ended up doing.
+
+make.R will install all the R package dependencies for this project
+
+cloud folder includes the files to run the analysis on the cloud and a README explaining the process that I used to set up 24 tasks.
+
+docker folder has the dockerfile that I used to create a docker image for this project
